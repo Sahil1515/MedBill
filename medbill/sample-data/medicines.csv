@@ -1,0 +1,54 @@
+name,generic_name,manufacturer,category,unit,hsn,gst_rate,schedule,rack_location,reorder_level,batch_no,expiry,purchase_price,mrp,sale_price,stock
+Paracetamol 500mg,Paracetamol,GSK,Analgesic,tab,30049099,12,OTC,R1-A1,50,PCM2401,2027-06,1.10,1.50,1.50,500
+Crocin Advance 500mg,Paracetamol,GSK,Analgesic,tab,30049099,12,OTC,R1-A1,50,CRO2403,2027-03,1.60,2.20,2.20,300
+Dolo 650mg,Paracetamol,Micro Labs,Analgesic,tab,30049099,12,OTC,R1-A2,60,DOL2404,2027-09,1.80,2.50,2.50,420
+Combiflam,Ibuprofen+Paracetamol,Sanofi,Analgesic,tab,30049099,12,OTC,R1-A2,30,CMB2312,2026-12,2.80,3.80,3.80,180
+Aspirin 75mg,Aspirin,USV,Antiplatelet,tab,30049099,5,OTC,R1-A3,40,ASP2402,2027-04,0.85,1.20,1.20,250
+Brufen 400mg,Ibuprofen,Abbott,Analgesic,tab,30049099,12,OTC,R1-A3,40,BRF2401,2027-01,3.00,4.20,4.20,200
+Volini Gel 50g,Diclofenac,Sun Pharma,Topical,tube,30049099,12,OTC,R3-B1,10,VOL2408,2027-08,75.00,95.00,95.00,40
+Amoxicillin 500mg,Amoxicillin,Cipla,Antibiotic,cap,30041020,12,H,R2-B1,40,AMX2407,2027-07,6.50,8.50,8.50,180
+Azithromycin 500mg,Azithromycin,Cipla,Antibiotic,tab,30041020,12,H,R2-B1,30,AZT2404,2027-04,14.00,18.00,18.00,120
+Ciprofloxacin 500mg,Ciprofloxacin,Ranbaxy,Antibiotic,tab,30041020,12,H,R2-B2,40,CIP2403,2027-03,5.20,6.80,6.80,150
+Augmentin 625 Duo,Amoxicillin+Clavulanate,GSK,Antibiotic,tab,30041020,12,H,R2-B2,20,AUG2408,2027-08,22.00,28.00,28.00,80
+Azithral 500,Azithromycin,Alembic,Antibiotic,tab,30041020,12,H,R2-B3,25,AZL2405,2027-05,13.00,17.00,17.00,90
+Pantoprazole 40mg,Pantoprazole,Alkem,Antacid,tab,30049099,12,H,R4-A1,50,PAN2406,2027-06,3.60,4.80,4.80,260
+Omeprazole 20mg,Omeprazole,Dr Reddy's,Antacid,cap,30049099,12,H,R4-A1,50,OMZ2407,2027-07,2.60,3.50,3.50,300
+Rantac 150mg,Ranitidine,JB Chemicals,Antacid,tab,30049099,12,OTC,R4-A2,50,RNT2404,2027-04,2.10,2.80,2.80,240
+Digene Tablet,Mg/Al Hydroxide,Abbott,Antacid,tab,30049099,5,OTC,R4-A2,50,DIG2403,2027-03,1.60,2.20,2.20,320
+Eno Sachet Lemon,Fruit Salt,GSK,Antacid,sachet,30049099,5,OTC,R4-A3,100,ENO2310,2026-10,3.80,5.00,5.00,400
+Cetirizine 10mg,Cetirizine,Cipla,Antihistamine,tab,30049099,5,OTC,R5-A1,60,CET2408,2027-08,1.30,1.80,1.80,500
+Allegra 120mg,Fexofenadine,Sanofi,Antihistamine,tab,30049099,12,H,R5-A1,30,ALG2406,2027-06,7.20,9.50,9.50,160
+Montair LC,Montelukast+Levocetirizine,Cipla,Antihistamine,tab,30049099,12,H,R5-A2,30,MTR2409,2027-09,9.00,12.00,12.00,140
+Sinarest,Paracetamol+Phenylephrine,Centaur,Cold,tab,30049099,12,OTC,R5-B1,40,SIN2403,2027-03,2.80,3.80,3.80,200
+Cheston Cold,Paracetamol+Phenylephrine,Cipla,Cold,tab,30049099,12,OTC,R5-B1,40,CHT2405,2027-05,3.20,4.20,4.20,180
+D Cold Total,Paracetamol+Phenylephrine,Reckitt,Cold,tab,30049099,12,OTC,R5-B2,40,DCD2404,2027-04,2.60,3.50,3.50,240
+Benadryl Cough Syrup 100ml,Diphenhydramine,J&J,Cough,bottle,30049099,12,OTC,R6-A1,15,BDY2402,2027-02,72.00,95.00,95.00,60
+Ascoril LS Syrup 100ml,Ambroxol+Levosalbutamol,Glenmark,Cough,bottle,30049099,12,H,R6-A1,15,ASC2406,2027-06,98.00,128.00,128.00,50
+Glycomet 500mg,Metformin,USV,Diabetes,tab,30049099,5,H,R7-A1,60,GLY2408,2027-08,1.70,2.20,2.20,300
+Glycomet GP1,Metformin+Glimepiride,USV,Diabetes,tab,30049099,5,H,R7-A1,30,GGP2406,2027-06,3.50,4.50,4.50,180
+Telma 40mg,Telmisartan,Glenmark,BP,tab,30049099,5,H,R7-A2,30,TLM2404,2027-04,6.50,8.50,8.50,150
+Amlokind 5mg,Amlodipine,Mankind,BP,tab,30049099,5,H,R7-A2,40,AML2407,2027-07,1.70,2.20,2.20,260
+Atorva 10mg,Atorvastatin,Zydus,Cholesterol,tab,30049099,5,H,R7-A3,40,ATV2405,2027-05,3.60,4.80,4.80,200
+Ecosprin 75mg,Aspirin,USV,Cardiac,tab,30049099,5,H,R7-A3,60,ECO2409,2027-09,1.10,1.50,1.50,400
+Thyronorm 50mcg,Levothyroxine,Abbott,Thyroid,tab,30049099,5,H,R8-A1,50,THY2403,2027-03,2.10,2.80,2.80,300
+Becosules Capsules,Multivitamin,Pfizer,Supplement,cap,30045090,18,OTC,R9-A1,80,BCS2405,2027-05,1.90,2.50,2.50,400
+Shelcal 500,Calcium+D3,Torrent,Supplement,tab,30045090,18,OTC,R9-A1,50,SHC2409,2027-09,3.20,4.20,4.20,250
+Limcee Vitamin C,Ascorbic Acid,Abbott,Supplement,tab,30045090,18,OTC,R9-A2,60,LMC2404,2027-04,1.30,1.80,1.80,320
+Zincovit Tablet,Multivitamin+Zinc,Apex,Supplement,tab,30045090,18,OTC,R9-A2,50,ZCV2406,2027-06,2.60,3.50,3.50,280
+Revital H,Multivitamin,Ranbaxy,Supplement,cap,30045090,18,OTC,R9-A3,30,RVT2408,2027-08,6.50,8.50,8.50,150
+Supradyn Daily,Multivitamin,Bayer,Supplement,tab,30045090,18,OTC,R9-A3,30,SUP2405,2027-05,5.20,6.80,6.80,180
+Dettol Antiseptic 100ml,Chloroxylenol,Reckitt,Antiseptic,bottle,38089400,18,OTC,R10-A1,15,DTL2501,2028-01,58.00,75.00,75.00,60
+Savlon 100ml,Chloroxylenol,Wipro,Antiseptic,bottle,38089400,18,OTC,R10-A1,15,SVN2503,2028-03,52.00,68.00,68.00,55
+Band-Aid Strip 10s,-,J&J,First Aid,strip,30051090,12,OTC,R10-A2,25,BND2512,2028-12,24.00,32.00,32.00,120
+Surgical Mask 3-ply,-,Romsons,PPE,pcs,63079090,5,OTC,R10-B1,200,MSK2512,2028-12,2.20,3.00,3.00,1000
+Hand Sanitizer 100ml,Ethanol,Dabur,PPE,bottle,38089400,18,OTC,R10-B1,20,HSN2412,2027-12,42.00,55.00,55.00,90
+Thermometer Digital,-,Omron,Device,pcs,90251910,18,OTC,R11-A1,5,THM3001,2030-01,135.00,180.00,180.00,15
+Glucometer Strips 25s,-,Accu-Chek,Device,strip,90189099,12,H,R11-A1,5,GLS2404,2027-04,320.00,425.00,425.00,20
+Iodex 16g,Methyl Salicylate,GSK,Topical,bottle,30049099,12,OTC,R3-B2,15,IOD2502,2028-02,38.00,52.00,52.00,75
+Zandu Balm 9ml,Menthol,Emami,Topical,bottle,33049990,18,OTC,R3-B2,20,ZBM2411,2027-11,28.00,38.00,38.00,100
+Otrivin Nasal Spray,Xylometazoline,Novartis,ENT,bottle,30049099,12,OTC,R12-A1,15,OTV2311,2026-11,74.00,98.00,98.00,45
+ORS Powder Orange,Electrolytes,FDC,Rehydration,sachet,21069099,5,OTC,R13-A1,50,ORS2408,2027-08,14.00,18.00,18.00,200
+Electral Powder,Electrolytes,FDC,Rehydration,sachet,21069099,5,OTC,R13-A1,50,ELC2407,2027-07,16.50,22.00,22.00,180
+Insulin Mixtard 100IU,Insulin,Novo Nordisk,Diabetes,bottle,30043110,5,H,R14-A1,10,INS2311,2026-11,128.00,165.00,165.00,25
+Calpol 250 Syrup 60ml,Paracetamol,GSK,Pediatric,bottle,30049099,12,OTC,R15-A1,20,CLP2404,2027-04,40.00,52.00,52.00,90
+Meftal P Syrup 60ml,Mefenamic Acid,Blue Cross,Pediatric,bottle,30049099,12,H,R15-A1,20,MPS2406,2027-06,52.00,68.00,68.00,75

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedBill — Offline Pharmacy Billing Software</title>
+  <meta name="description" content="Fast, offline pharmacy billing software for Indian medical stores. GST ready, barcode scanner support, WhatsApp bill sharing." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #1a6bff;
+      --blue-dark: #1256cc;
+      --green: #16a34a;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--gray-900);
+      background: #fff;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo { font-size: 1.3rem; font-weight: 700; color: var(--blue); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--gray-700); font-size: 0.95rem; font-weight: 500; }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-cta {
+      background: var(--blue); color: #fff;
+      padding: 8px 20px; border-radius: 8px;
+      text-decoration: none; font-weight: 600; font-size: 0.9rem;
+    }
+    .nav-cta:hover { background: var(--blue-dark); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+      padding: 80px 24px 64px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #dbeafe; color: var(--blue);
+      padding: 4px 14px; border-radius: 99px;
+      font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 20px; letter-spacing: 0.04em;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; line-height: 1.2;
+      color: var(--gray-900);
+      max-width: 700px; margin: 0 auto 20px;
+    }
+    .hero h1 span { color: var(--blue); }
+    .hero p {
+      font-size: 1.15rem; color: var(--gray-500);
+      max-width: 560px; margin: 0 auto 40px;
+    }
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--blue); color: #fff;
+      padding: 14px 32px; border-radius: 10px;
+      text-decoration: none; font-weight: 700; font-size: 1rem;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-secondary {
+      background: #fff; color: var(--gray-700);
+      padding: 14px 32px; border-radius: 10px;
+      text-decoration: none; font-weight: 600; font-size: 1rem;
+      border: 1.5px solid var(--gray-200);
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: border-color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+    .hero-note { margin-top: 20px; font-size: 0.85rem; color: var(--gray-500); }
+
+    /* SCREENSHOT STRIP */
+    .screenshot-strip {
+      background: var(--gray-900);
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .screenshot-strip img {
+      max-width: 900px; width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+    .screenshot-placeholder {
+      max-width: 900px; width: 100%; margin: 0 auto;
+      background: #1f2937;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #374151;
+    }
+    .app-mockup {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      min-height: 400px;
+      text-align: left;
+    }
+    .app-sidebar {
+      background: #111827;
+      padding: 20px 0;
+      border-right: 1px solid #374151;
+    }
+    .app-sidebar-logo {
+      font-size: 1.1rem; font-weight: 700; color: var(--blue);
+      padding: 0 20px 20px; border-bottom: 1px solid #374151; margin-bottom: 12px;
+    }
+    .app-sidebar-item {
+      padding: 10px 20px; font-size: 0.82rem; color: #9ca3af; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .app-sidebar-item.active { background: #1f2937; color: #fff; border-left: 3px solid var(--blue); }
+    .app-main { padding: 24px; }
+    .app-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .app-topbar h2 { font-size: 1rem; font-weight: 700; color: #fff; }
+    .app-btn { background: var(--blue); color: #fff; padding: 7px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+    .app-table { width: 100%; border-collapse: collapse; }
+    .app-table th { font-size: 0.75rem; color: #6b7280; text-align: left; padding: 8px 12px; border-bottom: 1px solid #374151; }
+    .app-table td { font-size: 0.82rem; color: #d1d5db; padding: 10px 12px; border-bottom: 1px solid #1f2937; }
+    .app-table tr:hover td { background: #1f2937; }
+    .app-badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 0.72rem; font-weight: 600; }
+    .app-badge.green { background: #064e3b; color: #34d399; }
+    .app-badge.yellow { background: #78350f; color: #fbbf24; }
+    .app-badge.red { background: #7f1d1d; color: #f87171; }
+    .app-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .app-stat { background: #1f2937; border-radius: 8px; padding: 14px; }
+    .app-stat .stat-label { font-size: 0.72rem; color: #6b7280; margin-bottom: 4px; }
+    .app-stat .stat-val { font-size: 1.2rem; font-weight: 700; color: #fff; }
+    .app-stat .stat-sub { font-size: 0.7rem; color: #16a34a; }
+
+    /* FEATURES */
+    section { padding: 80px 24px; }
+    .section-label {
+      text-align: center;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em;
+      color: var(--blue); text-transform: uppercase; margin-bottom: 12px;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800; margin-bottom: 16px;
+    }
+    .section-sub {
+      text-align: center; color: var(--gray-500);
+      max-width: 520px; margin: 0 auto 56px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px; max-width: 1100px; margin: 0 auto;
+    }
+    .feature-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .feature-card:hover { box-shadow: 0 4px 20px rgba(26,107,255,0.1); border-color: #bfdbfe; }
+    .feature-icon { font-size: 2rem; margin-bottom: 16px; }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { font-size: 0.9rem; color: var(--gray-500); }
+
+    /* PLATFORMS */
+    .platforms {
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .platforms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; max-width: 900px; margin: 0 auto;
+    }
+    .platform-card {
+      background: #fff;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      text-align: center;
+    }
+    .platform-card .platform-icon { font-size: 3rem; margin-bottom: 16px; }
+    .platform-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+    .platform-card p { font-size: 0.88rem; color: var(--gray-500); margin-bottom: 24px; }
+    .download-btn {
+      display: inline-block;
+      background: var(--blue); color: #fff;
+      padding: 11px 28px; border-radius: 8px;
+      text-decoration: none; font-weight: 600; font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: var(--blue-dark); }
+    .version-tag { font-size: 0.78rem; color: var(--gray-500); margin-top: 10px; }
+
+    /* PRICING */
+    .pricing { background: #fff; }
+
+    /* Toggle */
+    .billing-toggle {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; margin-bottom: 48px;
+    }
+    .toggle-label { font-size: 0.95rem; font-weight: 600; color: var(--gray-700); cursor: pointer; }
+    .toggle-label.active { color: var(--blue); }
+    .toggle-switch {
+      position: relative; width: 52px; height: 28px;
+      background: var(--blue); border-radius: 99px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-switch::after {
+      content: ''; position: absolute;
+      width: 22px; height: 22px; background: #fff;
+      border-radius: 50%; top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+    .toggle-switch.yearly::after { transform: translateX(24px); }
+    .save-badge {
+      background: #dcfce7; color: var(--green);
+      padding: 3px 10px; border-radius: 99px;
+      font-size: 0.78rem; font-weight: 700;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; max-width: 1000px; margin: 0 auto;
+      align-items: start;
+    }
+    .pricing-card {
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      position: relative;
+    }
+    .pricing-card.popular {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px #eff6ff;
+    }
+    .popular-badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--blue); color: #fff;
+      padding: 4px 18px; border-radius: 99px;
+      font-size: 0.78rem; font-weight: 700; white-space: nowrap;
+    }
+    .plan-name { font-size: 0.85rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+    .plan-price { font-size: 2.4rem; font-weight: 800; color: var(--gray-900); line-height: 1; }
+    .plan-price span { font-size: 1rem; font-weight: 500; color: var(--gray-500); }
+    .plan-period { font-size: 0.85rem; color: var(--gray-500); margin: 6px 0 28px; min-height: 40px; }
+    .plan-features { list-style: none; margin-bottom: 32px; }
+    .plan-features li {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 0.9rem; color: var(--gray-700);
+      padding: 6px 0; border-bottom: 1px solid var(--gray-100);
+    }
+    .plan-features li:last-child { border-bottom: none; }
+    .check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .cross { color: #9ca3af; flex-shrink: 0; }
+    .plan-btn {
+      display: block; text-align: center;
+      padding: 13px; border-radius: 9px;
+      font-weight: 700; text-decoration: none; font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .plan-btn-primary { background: var(--blue); color: #fff; }
+    .plan-btn-primary:hover { background: var(--blue-dark); }
+    .plan-btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1.5px solid var(--gray-200); }
+    .plan-btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+
+    /* TESTIMONIALS */
+    .testimonials { background: var(--gray-50); border-top: 1px solid var(--gray-200); }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; max-width: 1000px; margin: 0 auto;
+    }
+    .testimonial-card {
+      background: #fff; border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 28px;
+    }
+    .stars { color: #f59e0b; font-size: 1rem; margin-bottom: 14px; }
+    .testimonial-card p { font-size: 0.9rem; color: var(--gray-700); font-style: italic; margin-bottom: 18px; }
+    .testimonial-author { font-size: 0.85rem; font-weight: 600; color: var(--gray-900); }
+    .testimonial-role { font-size: 0.8rem; color: var(--gray-500); }
+
+    /* FAQ */
+    .faq-list { max-width: 700px; margin: 0 auto; }
+    .faq-item {
+      border-bottom: 1px solid var(--gray-200);
+      cursor: pointer;
+    }
+    .faq-question {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 0;
+      font-size: 0.95rem; font-weight: 700;
+      user-select: none;
+    }
+    .faq-arrow { transition: transform 0.2s; flex-shrink: 0; color: var(--blue); }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-answer {
+      font-size: 0.88rem; color: var(--gray-500);
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s;
+    }
+    .faq-item.open .faq-answer { max-height: 200px; padding-bottom: 20px; }
+
+    /* CTA BAND */
+    .cta-band {
+      background: linear-gradient(135deg, var(--blue) 0%, #2563eb 100%);
+      padding: 72px 24px;
+      text-align: center;
+      color: #fff;
+    }
+    .cta-band h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 16px; }
+    .cta-band p { font-size: 1.05rem; opacity: 0.85; margin-bottom: 36px; }
+    .btn-white {
+      background: #fff; color: var(--blue);
+      padding: 14px 36px; border-radius: 10px;
+      text-decoration: none; font-weight: 700; font-size: 1rem;
+      display: inline-block;
+    }
+    .btn-white:hover { background: #f0f9ff; }
+
+    /* FOOTER */
+    footer {
+      background: var(--gray-900); color: #9ca3af;
+      padding: 40px 24px 24px;
+      text-align: center;
+    }
+    .footer-logo { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    footer p { font-size: 0.85rem; margin-bottom: 8px; }
+    .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+    .footer-links a { color: #9ca3af; text-decoration: none; font-size: 0.82rem; }
+    .footer-links a:hover { color: #fff; }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero-buttons { flex-direction: column; align-items: center; }
+      .app-mockup { grid-template-columns: 1fr; }
+      .app-sidebar { display: none; }
+      .app-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">MedBill</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a class="nav-cta" href="#download">Free Trial</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge">Made for Indian Pharmacies</div>
+  <h1>Billing software that works <span>without internet</span></h1>
+  <p>MedBill handles GST billing, inventory, drug interactions, barcode scanning, and WhatsApp bill sharing — fully offline, on your own computer.</p>
+  <div class="hero-buttons">
+    <a href="#download" class="btn-primary">
+      ⬇ Download Free Trial
+    </a>
+    <a href="#pricing" class="btn-secondary">
+      View Pricing
+    </a>
+  </div>
+  <p class="hero-note">Works on Windows &amp; Mac · No internet needed · Data stays on your computer</p>
+</section>
+
+<!-- APP MOCKUP -->
+<div class="screenshot-strip">
+  <div class="screenshot-placeholder">
+    <div class="app-mockup">
+      <div class="app-sidebar">
+        <div class="app-sidebar-logo">💊 MedBill</div>
+        <div class="app-sidebar-item active">🧾 Billing</div>
+        <div class="app-sidebar-item">📦 Inventory</div>
+        <div class="app-sidebar-item">👥 Customers</div>
+        <div class="app-sidebar-item">🏪 Suppliers</div>
+        <div class="app-sidebar-item">📊 Reports</div>
+        <div class="app-sidebar-item">⚙️ Settings</div>
+      </div>
+      <div class="app-main">
+        <div class="app-topbar">
+          <h2>Today's Billing</h2>
+          <div class="app-btn">+ New Bill</div>
+        </div>
+        <div class="app-stats">
+          <div class="app-stat">
+            <div class="stat-label">Today's Sales</div>
+            <div class="stat-val">₹18,420</div>
+            <div class="stat-sub">↑ 12% vs yesterday</div>
+          </div>
+          <div class="app-stat">
+            <div class="stat-label">Bills Today</div>
+            <div class="stat-val">47</div>
+            <div class="stat-sub">↑ 5 more than avg</div>
+          </div>
+          <div class="app-stat">
+            <div class="stat-label">Low Stock Alerts</div>
+            <div class="stat-val">3</div>
+            <div class="stat-sub" style="color:#f87171;">Needs reorder</div>
+          </div>
+        </div>
+        <table class="app-table">
+          <thead>
+            <tr>
+              <th>Bill #</th><th>Customer</th><th>Amount</th><th>GST</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>#1047</td><td>Ravi Kumar</td><td>₹840</td><td>₹42</td><td><span class="app-badge green">Paid</span></td></tr>
+            <tr><td>#1046</td><td>Sunita Devi</td><td>₹320</td><td>₹16</td><td><span class="app-badge green">Paid</span></td></tr>
+            <tr><td>#1045</td><td>Mohan Lal</td><td>₹1,240</td><td>₹62</td><td><span class="app-badge yellow">Credit</span></td></tr>
+            <tr><td>#1044</td><td>Priya Sharma</td><td>₹560</td><td>₹28</td><td><span class="app-badge green">Paid</span></td></tr>
+            <tr><td>#1043</td><td>Ankit Gupta</td><td>₹2,100</td><td>₹105</td><td><span class="app-badge red">Pending</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-title">Everything a pharmacy needs</h2>
+  <p class="section-sub">Built for real Indian medical stores. No cloud lock-in, no server dependency.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🧾</div>
+      <h3>Fast GST Billing</h3>
+      <p>Generate GST-compliant invoices in seconds. Supports CGST, SGST, and IGST automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3>Inventory Management</h3>
+      <p>Track stock, expiry dates, batches, and get reorder alerts before you run out.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <h3>Barcode Scanner Support</h3>
+      <p>Plug in any USB barcode scanner — medicines are added to the bill instantly.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💊</div>
+      <h3>Drug Interaction Warnings</h3>
+      <p>Alerts you when conflicting medicines are billed together — protect your customers.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>WhatsApp Bill Sharing</h3>
+      <p>Share the bill directly on WhatsApp with one click — no SMS gateway needed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎫</div>
+      <h3>Schemes &amp; Discounts</h3>
+      <p>Set up offers, combo schemes, and loyalty discounts — applied automatically at billing.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏪</div>
+      <h3>Supplier Management</h3>
+      <p>Track purchases, returns, debit notes, and supplier payment ledger in one place.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💳</div>
+      <h3>Credit &amp; Collections</h3>
+      <p>Give credit to trusted customers, track outstanding balances, and record payments.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Reports</h3>
+      <p>Sales reports, doctor commission reports, shift close reports, and more — exportable to PDF/CSV.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💾</div>
+      <h3>Auto Backup</h3>
+      <p>Automatically backs up your data to a folder of your choice every 24 hours.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Offline License</h3>
+      <p>License key works without internet. Your data never leaves your computer.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🩺</div>
+      <h3>Prescription Attachments</h3>
+      <p>Attach scanned prescriptions to customer records for compliance and easy retrieval.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download" class="platforms">
+  <div class="section-label">Download</div>
+  <h2 class="section-title">Available on your platform</h2>
+  <p class="section-sub">Download and install in minutes. 30-day free trial, no credit card required.</p>
+
+  <div class="platforms-grid">
+    <div class="platform-card">
+      <div class="platform-icon">🪟</div>
+      <h3>Windows</h3>
+      <p>Windows 10 / 11 · 64-bit · ~120 MB installer</p>
+      <a href="https://github.com/Sahil1515/MedBill/releases/latest/download/MedBill-Setup-2.0.0.exe"
+         class="download-btn"
+         onclick="trackDownload('windows')">
+        ⬇ Download .exe
+      </a>
+      <p class="version-tag">v2.0.0 · Latest</p>
+    </div>
+    <div class="platform-card">
+      <div class="platform-icon">🍎</div>
+      <h3>macOS</h3>
+      <p>macOS 12+ (Monterey or later) · ~130 MB DMG</p>
+      <a href="https://github.com/Sahil1515/MedBill/releases/latest/download/MedBill-2.0.0.dmg"
+         class="download-btn"
+         onclick="trackDownload('mac')">
+        ⬇ Download .dmg
+      </a>
+      <p class="version-tag">v2.0.0 · Latest</p>
+    </div>
+  </div>
+
+  <p style="text-align:center; margin-top: 32px; font-size: 0.85rem; color: var(--gray-500);">
+    After downloading, install and use free for 30 days. Subscribe to unlock permanently.
+  </p>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pricing">
+  <div class="section-label">Pricing</div>
+  <h2 class="section-title">Simple, flexible pricing</h2>
+  <p class="section-sub">Start free for 30 days. Subscribe monthly or save with an annual plan.</p>
+
+  <!-- BILLING TOGGLE -->
+  <div class="billing-toggle">
+    <span class="toggle-label" id="lbl-monthly" onclick="setBilling('monthly')">Monthly</span>
+    <div class="toggle-switch" id="toggle" onclick="switchBilling()"></div>
+    <span class="toggle-label" id="lbl-yearly" onclick="setBilling('yearly')">Yearly</span>
+    <span class="save-badge">Save 33%</span>
+  </div>
+
+  <div class="pricing-grid">
+    <!-- FREE TRIAL -->
+    <div class="pricing-card">
+      <p class="plan-name">Free Trial</p>
+      <div class="plan-price">₹0</div>
+      <p class="plan-period">30 days · all features · no card required</p>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> All features unlocked</li>
+        <li><span class="check">✓</span> Unlimited bills</li>
+        <li><span class="check">✓</span> Inventory &amp; reports</li>
+        <li><span class="cross">✗</span> Subscription key not included</li>
+        <li><span class="cross">✗</span> No email support</li>
+      </ul>
+      <a href="#download" class="plan-btn plan-btn-secondary">Download Free</a>
+    </div>
+
+    <!-- STANDARD -->
+    <div class="pricing-card popular">
+      <div class="popular-badge">Most Popular</div>
+      <p class="plan-name">Standard</p>
+      <div class="plan-price" id="price-standard">₹499 <span>/ mo</span></div>
+      <p class="plan-period" id="period-standard">
+        Single store · 1 PC · billed monthly<br>
+        <span style="color:var(--gray-400);font-size:0.8rem;"></span>
+      </p>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> All features unlocked</li>
+        <li><span class="check">✓</span> License key via email</li>
+        <li><span class="check">✓</span> Software updates included</li>
+        <li><span class="check">✓</span> Email support</li>
+        <li><span class="cross">✗</span> Multi-PC not included</li>
+      </ul>
+      <a href="https://github.com/Sahil1515/MedBill/releases/latest" class="plan-btn plan-btn-primary" id="btn-standard">Subscribe</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="pricing-card">
+      <p class="plan-name">Pro</p>
+      <div class="plan-price" id="price-pro">₹899 <span>/ mo</span></div>
+      <p class="plan-period" id="period-pro">
+        Up to 3 PCs · same store · billed monthly<br>
+        <span style="color:var(--gray-400);font-size:0.8rem;"></span>
+      </p>
+      <ul class="plan-features">
+        <li><span class="check">✓</span> Everything in Standard</li>
+        <li><span class="check">✓</span> 3 PC activations</li>
+        <li><span class="check">✓</span> Priority WhatsApp support</li>
+        <li><span class="check">✓</span> Remote setup assistance</li>
+        <li><span class="check">✓</span> Early access to new features</li>
+      </ul>
+      <a href="https://github.com/Sahil1515/MedBill/releases/latest" class="plan-btn plan-btn-secondary" id="btn-pro">Subscribe Pro</a>
+    </div>
+  </div>
+
+  <p style="text-align:center; margin-top: 40px; font-size: 0.85rem; color: var(--gray-500);">
+    All prices in Indian Rupees (INR) · GST invoice provided · Cancel anytime
+  </p>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-label">Testimonials</div>
+  <h2 class="section-title">Trusted by pharmacies</h2>
+  <p class="section-sub">Here's what our customers say.</p>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"At ₹499/month, MedBill costs less than our old software's yearly maintenance call. Billing is 3x faster now."</p>
+      <div class="testimonial-author">Ramesh Pharmacy</div>
+      <div class="testimonial-role">Medical Store, Pune</div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"The barcode scanner support and drug interaction warning is something even expensive software doesn't have. Excellent."</p>
+      <div class="testimonial-author">Sharma Medical</div>
+      <div class="testimonial-role">Medical Store, Jaipur</div>
+    </div>
+    <div class="testimonial-card">
+      <div class="stars">★★★★★</div>
+      <p>"Works perfectly without internet. Power goes, internet goes — billing never stops. Exactly what we needed."</p>
+      <div class="testimonial-author">City Medicals</div>
+      <div class="testimonial-role">Medical Store, Indore</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-title">Frequently asked questions</h2>
+  <p class="section-sub">Have more questions? Email us at <a href="mailto:support@medbill.in" style="color:var(--blue);">support@medbill.in</a></p>
+
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-question">
+        Does it work without internet?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-answer">Yes, 100% offline. All data is stored on your own computer. An internet connection is never required for billing — only to activate or renew your subscription key.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        What happens after the 30-day trial?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-answer">After 30 days the software will prompt you for a subscription key. Subscribe to a Monthly or Yearly plan, receive your key by email, and enter it in Settings → License to unlock.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        Can I cancel my subscription anytime?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-answer">Yes. Cancel anytime from your account or by emailing support. You retain access until the end of your current billing period. Your data stays on your computer — we don't delete it.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        Is my billing data safe?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-answer">Your data never leaves your computer — it's stored in a local database. The auto-backup feature copies it to a folder or USB drive of your choice every 24 hours.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        Does it support barcode scanners?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-answer">Yes. Any USB HID barcode scanner (the kind that shows up as a keyboard) works out of the box. No drivers needed.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        Is GST billing supported?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-answer">Yes. MedBill automatically applies CGST, SGST, and IGST based on the tax rate you set per medicine. GST-format invoices can be printed or shared via WhatsApp.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">
+        What payment methods do you accept?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-answer">UPI, Net Banking, Debit/Credit Card via Razorpay. A GST invoice is emailed immediately after payment.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <h2>Start billing smarter today</h2>
+  <p>Download MedBill free and try it for 30 days — no credit card, no internet required.</p>
+  <a href="#download" class="btn-white">Download Free Trial</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">MedBill</div>
+  <p>Offline pharmacy billing software for Indian medical stores.</p>
+  <p>Questions? <a href="mailto:support@medbill.in" style="color:#60a5fa;">support@medbill.in</a></p>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="refund.html">Refund Policy</a>
+    <a href="terms.html">Terms of Use</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <p style="margin-top: 28px; font-size: 0.78rem;">© 2026 MedBill. All rights reserved.</p>
+</footer>
+
+<script>
+  /* ---- PRICING TOGGLE ---- */
+  const plans = {
+    standard: {
+      monthly: { price: '₹499 <span>/ mo</span>', period: 'Single store · 1 PC · billed monthly' },
+      yearly:  { price: '₹3,999 <span>/ yr</span>', period: 'Single store · 1 PC · billed yearly · <strong style="color:var(--green)">Save ₹2,000</strong>' }
+    },
+    pro: {
+      monthly: { price: '₹899 <span>/ mo</span>', period: 'Up to 3 PCs · same store · billed monthly' },
+      yearly:  { price: '₹7,199 <span>/ yr</span>', period: 'Up to 3 PCs · same store · billed yearly · <strong style="color:var(--green)">Save ₹3,588</strong>' }
+    }
+  };
+
+  let currentBilling = 'monthly';
+
+  function applyBilling(mode) {
+    currentBilling = mode;
+    document.getElementById('price-standard').innerHTML = plans.standard[mode].price;
+    document.getElementById('period-standard').innerHTML = plans.standard[mode].period;
+    document.getElementById('price-pro').innerHTML = plans.pro[mode].price;
+    document.getElementById('period-pro').innerHTML = plans.pro[mode].period;
+
+    const toggle = document.getElementById('toggle');
+    if (mode === 'yearly') {
+      toggle.classList.add('yearly');
+    } else {
+      toggle.classList.remove('yearly');
+    }
+
+    document.getElementById('lbl-monthly').classList.toggle('active', mode === 'monthly');
+    document.getElementById('lbl-yearly').classList.toggle('active', mode === 'yearly');
+  }
+
+  function setBilling(mode) { applyBilling(mode); }
+  function switchBilling() { applyBilling(currentBilling === 'monthly' ? 'yearly' : 'monthly'); }
+
+  applyBilling('monthly');
+
+  /* ---- FAQ ACCORDION ---- */
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-question').addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  /* ---- SMOOTH SCROLL ---- */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+
+  /* ---- DOWNLOAD TRACKING (console only) ---- */
+  function trackDownload(platform) {
+    console.log('Download clicked:', platform);
+  }
+</script>
+
+</body>
+</html>

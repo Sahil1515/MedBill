@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — MedBill</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --blue: #1a6bff; --blue-dark: #1256cc; --gray-50: #f9fafb; --gray-200: #e5e7eb; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827; --radius: 12px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--gray-900); background: #fff; line-height: 1.7; }
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--gray-200); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-logo { font-size: 1.3rem; font-weight: 700; color: var(--blue); text-decoration: none; }
+    .back-link { font-size: 0.9rem; color: var(--blue); text-decoration: none; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .hero { background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); padding: 60px 24px 40px; text-align: center; }
+    .hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; margin-bottom: 12px; }
+    .hero p { font-size: 1.05rem; color: var(--gray-500); max-width: 480px; margin: 0 auto; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 960px; margin: 0 auto; padding: 60px 24px; }
+    @media (max-width: 680px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-info h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; }
+    .contact-method { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 28px; }
+    .contact-method .icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+    .contact-method h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .contact-method p { font-size: 0.88rem; color: var(--gray-500); margin: 0; }
+    .contact-method a { color: var(--blue); text-decoration: none; }
+    .contact-method a:hover { text-decoration: underline; }
+    .form-card { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 32px; }
+    .form-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; color: var(--gray-700); }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--gray-200); border-radius: 8px;
+      font-size: 0.93rem; font-family: inherit; color: var(--gray-900);
+      background: #fff; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: var(--blue);
+      box-shadow: 0 0 0 3px #eff6ff;
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .submit-btn {
+      width: 100%; padding: 13px;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 9px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .submit-btn:hover { background: var(--blue-dark); }
+    .success-msg { display: none; background: #dcfce7; border: 1px solid #bbf7d0; border-radius: 9px; padding: 14px 18px; font-size: 0.9rem; color: #15803d; margin-top: 14px; }
+    footer { background: var(--gray-900); color: #9ca3af; padding: 24px; text-align: center; font-size: 0.85rem; }
+    footer a { color: #9ca3af; text-decoration: none; margin: 0 10px; }
+    footer a:hover { color: #fff; }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="index.html">MedBill</a>
+  <a class="back-link" href="index.html">← Back to Home</a>
+</nav>
+
+<div class="hero">
+  <h1>Get in Touch</h1>
+  <p>We're here to help. Expect a response within one business day.</p>
+</div>
+
+<div class="contact-grid">
+  <div class="contact-info">
+    <h2>Contact Information</h2>
+
+    <div class="contact-method">
+      <div class="icon">📧</div>
+      <div>
+        <h3>Email Support</h3>
+        <p><a href="mailto:support@medbill.in">support@medbill.in</a></p>
+        <p>Mon – Sat, 10am – 6pm IST</p>
+      </div>
+    </div>
+
+    <div class="contact-method">
+      <div class="icon">💬</div>
+      <div>
+        <h3>WhatsApp</h3>
+        <p>Pro subscribers get priority WhatsApp support.</p>
+        <p>Available during business hours.</p>
+      </div>
+    </div>
+
+    <div class="contact-method">
+      <div class="icon">🐛</div>
+      <div>
+        <h3>Bug Reports</h3>
+        <p><a href="https://github.com/Sahil1515/MedBill/issues" target="_blank" rel="noopener">GitHub Issues</a></p>
+        <p>For technical bugs and feature requests.</p>
+      </div>
+    </div>
+
+    <div class="contact-method">
+      <div class="icon">💳</div>
+      <div>
+        <h3>Billing &amp; Refunds</h3>
+        <p>See our <a href="refund.html">Refund Policy</a> or email support with your order ID.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h2>Send us a message</h2>
+    <form id="contact-form" onsubmit="handleSubmit(event)">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="Ramesh Sharma" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="ramesh@example.com" required />
+      </div>
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <select id="subject">
+          <option value="">Select a topic...</option>
+          <option>Pre-sales question</option>
+          <option>Technical support</option>
+          <option>License / activation issue</option>
+          <option>Refund request</option>
+          <option>Feature request</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" placeholder="Describe your question or issue..." required></textarea>
+      </div>
+      <button class="submit-btn" type="submit">Send Message</button>
+      <div class="success-msg" id="success-msg">
+        ✅ Message sent! We'll get back to you within one business day.
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 MedBill · <a href="index.html">Home</a> <a href="privacy.html">Privacy</a> <a href="refund.html">Refund</a> <a href="terms.html">Terms</a> <a href="contact.html">Contact</a></p>
+</footer>
+
+<script>
+  function handleSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value.trim();
+
+    if (!name || !email || !message) return;
+
+    // Build mailto link as fallback (opens user's email client)
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`);
+    const mailtoLink = `mailto:support@medbill.in?subject=${encodeURIComponent('MedBill Contact: ' + (subject || 'General Inquiry'))}&body=${body}`;
+
+    window.location.href = mailtoLink;
+
+    document.getElementById('success-msg').style.display = 'block';
+    document.getElementById('contact-form').reset();
+  }
+</script>
+</body>
+</html>

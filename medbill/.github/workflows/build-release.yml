@@ -1,0 +1,69 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"   # triggers on v1.0.0, v2.0.0, etc.
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm ci
+      - name: Rebuild native modules for Electron
+        run: npm run rebuild
+      - name: Build Windows installer
+        run: npm run build:win
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: release/*.exe
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm ci
+      - name: Rebuild native modules for Electron
+        run: npm run rebuild
+      - name: Build Mac DMG
+        run: npm run build:mac
+      - name: Upload Mac artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-build
+          path: release/*.dmg
+
+  release:
+    needs: [build-windows, build-mac]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: artifacts/windows
+      - name: Download Mac build
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-build
+          path: artifacts/mac
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/windows/*.exe
+            artifacts/mac/*.dmg
+          generate_release_notes: true
