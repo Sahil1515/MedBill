@@ -1,6 +1,9 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const { version } = require('../../package.json');
 
 const invoke = (ch, ...a) => ipcRenderer.invoke(ch, ...a);
+
+contextBridge.exposeInMainWorld('appMeta', { version });
 
 contextBridge.exposeInMainWorld('events', {
   onNav: (cb) => ipcRenderer.on('nav', (_e, target) => cb(target)),

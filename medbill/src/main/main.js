@@ -135,7 +135,7 @@ function createWindow() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About MedBill',
-              message: 'MedBill v2.0.0',
+              message: `MedBill v${app.getVersion()}`,
               detail:
                 'Offline pharmacy management software\n\n' +
                 'Billing · Inventory · Purchases · Returns · Customers · Suppliers · Doctors · Reports · GST\n' +

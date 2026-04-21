@@ -211,7 +211,7 @@ export default function App() {
             <span>{theme === 'light' ? '☀ Light' : '☾ Dark'}</span>
             <span>↔</span>
           </div>
-          <div style={{ fontSize: 11 }}>v2.0.0 · Offline</div>
+          <div style={{ fontSize: 11 }}>v{window.appMeta?.version ?? '—'} · Offline</div>
         </div>
       </aside>
 
