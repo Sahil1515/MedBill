@@ -196,7 +196,13 @@ async function start(onBarcode) {
   });
 
   return new Promise((resolve, reject) => {
-    server.on('error', reject);
+    // Attach a permanent error handler so Node never throws an uncaught exception
+    // if the server errors after the promise has already settled.
+    server.on('error', (err) => {
+      console.warn('Scanner server error:', err.message);
+      serverInfo = null;
+      reject(err); // no-op if promise already settled
+    });
     server.listen(PORT, '0.0.0.0', () => {
       serverInfo = { ip, port: PORT, url: `https://${ip}:${PORT}` };
       resolve(serverInfo);
