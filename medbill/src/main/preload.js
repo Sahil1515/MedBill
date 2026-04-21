@@ -1,9 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
-const { version } = require('../../package.json');
 
 const invoke = (ch, ...a) => ipcRenderer.invoke(ch, ...a);
-
-contextBridge.exposeInMainWorld('appMeta', { version });
 
 contextBridge.exposeInMainWorld('events', {
   onNav: (cb) => ipcRenderer.on('nav', (_e, target) => cb(target)),
@@ -90,6 +87,7 @@ contextBridge.exposeInMainWorld('api', {
   exportCsv: (payload) => invoke('export:csv', payload),
   readTextFile: () => invoke('file:readText'),
   getDbPath: () => invoke('app:getDbPath'),
+  getVersion: () => invoke('app:version'),
 
   // Purchase Returns
   savePurchaseReturn: (d) => invoke('purchase_returns:save', d),

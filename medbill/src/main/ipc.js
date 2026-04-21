@@ -1,4 +1,4 @@
-const { ipcMain, dialog, BrowserWindow, shell } = require('electron');
+const { ipcMain, dialog, BrowserWindow, shell, app } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -179,6 +179,7 @@ function registerIpc() {
   });
 
   ipcMain.handle('app:getDbPath', wrap(() => db.getDbPath()));
+  ipcMain.handle('app:version', wrap(() => app.getVersion()));
 
   // Purchase Returns
   ipcMain.handle('purchase_returns:save', wrap((data) => db.savePurchaseReturn(data)));

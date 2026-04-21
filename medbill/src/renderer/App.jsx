@@ -46,6 +46,7 @@ export default function App() {
   const [toast, setToast] = useState(null);
   const [theme, setTheme] = useState('light');
   const [update, setUpdate] = useState(null);   // null | { state, version, percent }
+  const [appVersion, setAppVersion] = useState('...');
   // 'loading' | 'none' | 'expired' | 'valid'
   const [licenseStatus, setLicenseStatus] = useState('loading');
   const [licenseExpiredOn, setLicenseExpiredOn] = useState(null);
@@ -66,6 +67,10 @@ export default function App() {
   }, []);
 
   useEffect(() => { loadSettings(); }, [loadSettings]);
+
+  useEffect(() => {
+    window.api.getVersion().then((r) => { if (r.ok) setAppVersion(r.data); });
+  }, []);
 
   // license check — runs once on mount
   useEffect(() => {
@@ -211,7 +216,7 @@ export default function App() {
             <span>{theme === 'light' ? '☀ Light' : '☾ Dark'}</span>
             <span>↔</span>
           </div>
-          <div style={{ fontSize: 11 }}>v{window.appMeta?.version ?? '—'} · Offline</div>
+          <div style={{ fontSize: 11 }}>v{appVersion} · Offline</div>
         </div>
       </aside>
 
