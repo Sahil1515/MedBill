@@ -213,6 +213,26 @@ ipcMain.handle('updater:check', async () => {
 ipcMain.on('updater:download', () => { if (!isDev) autoUpdater.downloadUpdate(); });
 ipcMain.on('updater:install',  () => { if (!isDev) autoUpdater.quitAndInstall(false, true); });
 
+// Dev-only: simulate the full update flow so the UI can be tested without a real release
+if (isDev) {
+  ipcMain.on('updater:simulate', () => {
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+    // Step 1 — update available
+    mainWindow.webContents.send('updater:available', { version: '99.0.0' });
+    // Step 2 — fake download progress (0→100 over 3 seconds)
+    let pct = 0;
+    const tick = setInterval(() => {
+      pct += 20;
+      mainWindow.webContents.send('updater:progress', { percent: pct });
+      if (pct >= 100) {
+        clearInterval(tick);
+        // Step 3 — downloaded
+        mainWindow.webContents.send('updater:downloaded', { version: '99.0.0' });
+      }
+    }, 600);
+  });
+}
+
 app.on('window-all-closed', () => {
   scanner.stop();
   if (process.platform !== 'darwin') app.quit();

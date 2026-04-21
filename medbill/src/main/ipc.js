@@ -11,7 +11,13 @@ const QRCode = require('qrcode');
 // Then paste the output of: node keygen.js pubkey
 // REPLACE the placeholder below before building for distribution.
 const LICENSE_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
-REPLACE_THIS_WITH_OUTPUT_OF__node_keygen.js_pubkey
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjK4ZmfjRCTdF0l3kYjx1
+TO7Bi3ToGcyn4Uq1WZk796hqCW5VJYefgHGYsxGb8W0JcU/+bQUwhDSFCN0bCFF7
+czy4u/EnQb1BmMGfjq6LJ2fGOSBvnGZo9e5pZgYlAgIlps9wENhhK/twcdTyg0Xv
+UiSaleZqinugiP+Az3jXeXfSS7pfNEvZbFHMaJfPTKpuL+xiBi520NrjJCmkX3E3
+I1dWVMc0uqK+sTHf8JKF481iOSSYo9OGUg5AgOxoMi/zBGjAJlt7bUX5NG+pLi/c
+V/7hoGDZaB1rZFoL4H4KExqaX+6NboYMs5r7LOgIOPZh6pI7wbayqWS2LavG75xW
+GQIDAQAB
 -----END PUBLIC KEY-----`;
 
 function wrap(fn) {
@@ -236,11 +242,20 @@ function registerIpc() {
     if (!sig || !pharmacy_name || !expires_at || !issued_at) throw new Error('Malformed license key');
     // Verify RSA-SHA256 signature
     const body = `${pharmacy_name}|${plan}|${expires_at}|${issued_at}`;
-    const verify = crypto.createVerify('RSA-SHA256');
-    verify.update(body);
+    const verifier = crypto.createVerify('RSA-SHA256');
+    verifier.update(body);
     let valid = false;
-    try { valid = verify.verify(LICENSE_PUBLIC_KEY, sig, 'base64'); } catch { valid = false; }
-    if (!valid) throw new Error('License key is invalid or has been tampered with');
+    try {
+      valid = verifier.verify(LICENSE_PUBLIC_KEY, sig, 'base64');
+    } catch (verifyErr) {
+      console.error('[License] verify() threw:', verifyErr.message);
+      console.error('[License] PUBLIC KEY starts with:', LICENSE_PUBLIC_KEY.slice(0, 40));
+      valid = false;
+    }
+    if (!valid) {
+      console.error('[License] Verification failed. Body signed:', body);
+      throw new Error('License key is invalid or has been tampered with');
+    }
     // Check expiry
     if (new Date(expires_at) < new Date()) throw new Error('License has expired. Please renew.');
     // Persist

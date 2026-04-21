@@ -129,9 +129,10 @@ contextBridge.exposeInMainWorld('api', {
   activateLicense: (key) => invoke('license:activate', key),
 
   // Updater
-  checkForUpdates: () => invoke('updater:check'),
-  downloadUpdate:  () => ipcRenderer.send('updater:download'),
-  installUpdate:   () => ipcRenderer.send('updater:install'),
+  checkForUpdates:  () => invoke('updater:check'),
+  downloadUpdate:   () => ipcRenderer.send('updater:download'),
+  installUpdate:    () => ipcRenderer.send('updater:install'),
+  simulateUpdate:   () => ipcRenderer.send('updater:simulate'),
 
   // Auto-backup
   pickAutoBackupFolder: () => invoke('backup:auto_folder'),

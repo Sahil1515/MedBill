@@ -14,6 +14,7 @@ import Schemes from './pages/Schemes.jsx';
 import Reports from './pages/Reports.jsx';
 import Settings from './pages/Settings.jsx';
 import Toast from './components/Toast.jsx';
+import LicenseGate from './pages/LicenseGate.jsx';
 
 const NAV = [
   { section: 'Main' },
@@ -44,7 +45,10 @@ export default function App() {
   const [settings, setSettings] = useState(null);
   const [toast, setToast] = useState(null);
   const [theme, setTheme] = useState('light');
-  const [update, setUpdate] = useState(null); // null | { state, version, percent }
+  const [update, setUpdate] = useState(null);   // null | { state, version, percent }
+  // 'loading' | 'none' | 'expired' | 'valid'
+  const [licenseStatus, setLicenseStatus] = useState('loading');
+  const [licenseExpiredOn, setLicenseExpiredOn] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -62,6 +66,20 @@ export default function App() {
   }, []);
 
   useEffect(() => { loadSettings(); }, [loadSettings]);
+
+  // license check — runs once on mount
+  useEffect(() => {
+    window.api.getLicense().then((res) => {
+      if (!res.ok || !res.data || !res.data.expires_at) {
+        setLicenseStatus('none');
+      } else if (new Date(res.data.expires_at) < new Date()) {
+        setLicenseExpiredOn(res.data.expires_at);
+        setLicenseStatus('expired');
+      } else {
+        setLicenseStatus('valid');
+      }
+    });
+  }, []);
 
   // updater events
   useEffect(() => {
@@ -107,8 +125,19 @@ export default function App() {
     setSettings((s) => ({ ...s, theme: next }));
   };
 
-  if (settings === null) {
+  // Hard gate — nothing renders until license is verified
+  if (licenseStatus === 'loading' || settings === null) {
     return <div style={{ padding: 40 }}>Loading MedBill...</div>;
+  }
+
+  if (licenseStatus === 'none' || licenseStatus === 'expired') {
+    return (
+      <LicenseGate
+        expired={licenseStatus === 'expired'}
+        expiredOn={licenseExpiredOn}
+        onActivated={() => setLicenseStatus('valid')}
+      />
+    );
   }
 
   const isConfigured = settings && settings.pharmacy_name;
