@@ -528,23 +528,25 @@
       <div class="platform-icon">🪟</div>
       <h3>Windows</h3>
       <p>Windows 10 / 11 · 64-bit · ~120 MB installer</p>
-      <a href="https://github.com/Sahil1515/MedBill/releases/latest/download/MedBill-Setup-2.0.0.exe"
+      <a id="download-win"
+         href="https://github.com/Sahil1515/MedBill/releases/latest/download/MedBill-Setup.exe"
          class="download-btn"
          onclick="trackDownload('windows')">
         ⬇ Download .exe
       </a>
-      <p class="version-tag">v2.0.0 · Latest</p>
+      <p class="version-tag" id="version-win">Checking…</p>
     </div>
     <div class="platform-card">
       <div class="platform-icon">🍎</div>
       <h3>macOS</h3>
       <p>macOS 12+ (Monterey or later) · ~130 MB DMG</p>
-      <a href="https://github.com/Sahil1515/MedBill/releases/latest/download/MedBill-2.0.0.dmg"
+      <a id="download-mac"
+         href="https://github.com/Sahil1515/MedBill/releases/latest/download/MedBill.dmg"
          class="download-btn"
          onclick="trackDownload('mac')">
         ⬇ Download .dmg
       </a>
-      <p class="version-tag">v2.0.0 · Latest</p>
+      <p class="version-tag" id="version-mac">Checking…</p>
     </div>
   </div>
 
@@ -793,6 +795,24 @@
   function trackDownload(platform) {
     console.log('Download clicked:', platform);
   }
+
+  /* ---- LIVE VERSION FROM GITHUB ---- */
+  fetch('https://api.github.com/repos/Sahil1515/MedBill/releases/latest')
+    .then(r => r.json())
+    .then(release => {
+      const tag = release.tag_name || '';
+      const label = tag + ' · Latest';
+      const winAsset = release.assets.find(a => a.name.endsWith('.exe'));
+      const macAsset = release.assets.find(a => a.name.endsWith('.dmg'));
+      if (winAsset) document.getElementById('download-win').href = winAsset.browser_download_url;
+      if (macAsset) document.getElementById('download-mac').href = macAsset.browser_download_url;
+      document.getElementById('version-win').textContent = label;
+      document.getElementById('version-mac').textContent = label;
+    })
+    .catch(() => {
+      document.getElementById('version-win').textContent = 'Latest';
+      document.getElementById('version-mac').textContent = 'Latest';
+    });
 </script>
 
 </body>
