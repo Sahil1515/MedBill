@@ -244,16 +244,6 @@ export default function Settings({ settings, onSaved, showToast, firstLaunch = f
         )}
       </div>
 
-      {/* Dev-only: test the update banner without a real release */}
-      {import.meta.env.DEV && (
-        <div style={{ marginTop: 24, padding: '12px 16px', border: '1px dashed var(--border-strong)', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 12, color: 'var(--muted)' }}>DEV</span>
-          <button style={{ fontSize: 12 }} onClick={() => window.api.simulateUpdate()}>
-            Simulate Update Notification
-          </button>
-          <span style={{ fontSize: 12, color: 'var(--muted)' }}>Plays the full available → downloading → ready flow</span>
-        </div>
-      )}
     </div>
   );
 }
