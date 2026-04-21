@@ -21,6 +21,13 @@ export default function Billing({ settings, showToast }) {
   const barcodeBuffer = useRef('');
   const barcodeTimer = useRef(null);
 
+  // Phone camera scanner modal
+  const [showScanModal, setShowScanModal] = useState(false);
+  const [phoneScanQR, setPhoneScanQR] = useState(null); // { url, qr }
+
+  // Out-of-stock alert popup
+  const [outOfStockAlert, setOutOfStockAlert] = useState(null); // { barcode, name? }
+
   // Drug interaction warnings
   const [interactions, setInteractions] = useState([]);
 
@@ -59,60 +66,6 @@ export default function Billing({ settings, showToast }) {
     }, 100);
     return () => { cancel = true; clearTimeout(t); };
   }, [query]);
-
-  // Barcode scanner: USB HID scanners fire characters in <30ms intervals then Enter.
-  // We capture into a buffer; if the sequence ends with Enter within 100ms of first char,
-  // treat the buffer as a barcode and search for it.
-  const handleBarcodeKeyDown = useCallback((e) => {
-    if (e.target !== searchRef.current) return;
-    if (e.key === 'Enter' && barcodeBuffer.current.length >= 4) {
-      // Already handled in onSearchKey for normal Enter; the barcode path fires separately
-      // when the buffer was built from fast typing
-      return;
-    }
-    if (e.key.length === 1) {
-      if (!barcodeTimer.current) {
-        barcodeBuffer.current = e.key;
-        barcodeTimer.current = setTimeout(() => {
-          barcodeBuffer.current = '';
-          barcodeTimer.current = null;
-        }, 100);
-      } else {
-        barcodeBuffer.current += e.key;
-      }
-    }
-    if (e.key === 'Enter' && barcodeBuffer.current.length >= 4) {
-      clearTimeout(barcodeTimer.current);
-      const code = barcodeBuffer.current;
-      barcodeBuffer.current = '';
-      barcodeTimer.current = null;
-      // Search by barcode (exact match via barcode field)
-      window.api.getMedicines(code).then((r) => {
-        if (r.ok) {
-          const exact = r.data.find((m) => m.barcode === code && m.total_stock > 0);
-          if (exact) { addMedicine(exact); setQuery(''); setResults([]); }
-        }
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleBarcodeKeyDown);
-    return () => window.removeEventListener('keydown', handleBarcodeKeyDown);
-  }, [handleBarcodeKeyDown]);
-
-  // Lookup customer by phone
-  useEffect(() => {
-    if (!patient.phone || patient.phone.length < 10) return;
-    const t = setTimeout(async () => {
-      const res = await window.api.findCustomer(patient.phone);
-      if (res.ok && res.data && !patient.name) {
-        setPatient((p) => ({ ...p, name: res.data.name }));
-        showToast(`Customer: ${res.data.name}`, 'success');
-      }
-    }, 400);
-    return () => clearTimeout(t);
-  }, [patient.phone]);
 
   const addMedicine = useCallback(async (med) => {
     // Fetch batches for medicine
@@ -155,6 +108,86 @@ export default function Billing({ settings, showToast }) {
     searchRef.current?.focus();
   }, [showToast]);
 
+  // Shared barcode processing — used by both USB HID scanner and phone camera scanner
+  const processBarcode = useCallback(async (code) => {
+    // Ignore manufacturer/verification QR codes (URLs) — only process numeric barcodes
+    if (code.startsWith('http://') || code.startsWith('https://')) {
+      console.log(`[Scanner] Ignoring URL QR code: ${code}`);
+      return;
+    }
+    console.log(`[Scanner] Barcode scanned: ${code} at ${new Date().toISOString()}`);
+    const r = await window.api.getMedicines(code);
+    if (!r.ok) {
+      console.error('[Scanner] Lookup failed:', r.error);
+      return;
+    }
+    const match = r.data.find((m) => m.barcode === code);
+    const exact = match && match.total_stock > 0 ? match : null;
+    if (exact) {
+      console.log(`[Scanner] Found in stock: ${exact.name} (stock: ${exact.total_stock})`);
+      addMedicine(exact);
+      setQuery('');
+      setResults([]);
+    } else {
+      const name = match ? match.name : null;
+      console.warn(`[Scanner] Barcode ${code} — ${match ? `found "${match.name}" but OUT OF STOCK` : 'not found in database'}`);
+      setOutOfStockAlert({ barcode: code, name });
+    }
+  }, [addMedicine, showToast]);
+
+  // USB HID scanner: characters arrive in <30ms intervals then Enter
+  const handleBarcodeKeyDown = useCallback((e) => {
+    if (e.target !== searchRef.current) return;
+    if (e.key === 'Enter' && barcodeBuffer.current.length >= 4) {
+      return; // handled below after buffer check
+    }
+    if (e.key.length === 1) {
+      if (!barcodeTimer.current) {
+        barcodeBuffer.current = e.key;
+        barcodeTimer.current = setTimeout(() => {
+          barcodeBuffer.current = '';
+          barcodeTimer.current = null;
+        }, 100);
+      } else {
+        barcodeBuffer.current += e.key;
+      }
+    }
+    if (e.key === 'Enter' && barcodeBuffer.current.length >= 4) {
+      clearTimeout(barcodeTimer.current);
+      const code = barcodeBuffer.current;
+      barcodeBuffer.current = '';
+      barcodeTimer.current = null;
+      processBarcode(code);
+    }
+  }, [processBarcode]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleBarcodeKeyDown);
+    return () => window.removeEventListener('keydown', handleBarcodeKeyDown);
+  }, [handleBarcodeKeyDown]);
+
+  // Phone camera scanner: receive barcodes sent from the phone via WebSocket → IPC
+  useEffect(() => {
+    const cleanup = window.events.onPhoneBarcode((code) => {
+      processBarcode(code);
+      showToast('📷 Scanned: ' + code, 'success');
+    });
+    return cleanup;
+  }, [processBarcode, showToast]);
+
+  // Lookup customer by phone
+  useEffect(() => {
+    if (!patient.phone || patient.phone.length < 10) return;
+    const t = setTimeout(async () => {
+      const res = await window.api.findCustomer(patient.phone);
+      if (res.ok && res.data && !patient.name) {
+        setPatient((p) => ({ ...p, name: res.data.name }));
+        showToast(`Customer: ${res.data.name}`, 'success');
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [patient.phone]);
+
   const updateQty = (idx, qty) => {
     setItems((cur) =>
       cur.map((i, k) => {
@@ -194,6 +227,18 @@ export default function Billing({ settings, showToast }) {
     else if (e.key === 'Escape') { setResults([]); setQuery(''); }
   };
 
+
+  const openPhoneScanner = async () => {
+    setPhoneScanQR(null);
+    setShowScanModal(true);
+    const r = await window.api.getPhoneScannerQR();
+    if (r.ok) {
+      setPhoneScanQR(r.data);
+    } else {
+      showToast('Could not start phone scanner: ' + r.error, 'error');
+      setShowScanModal(false);
+    }
+  };
 
   const reset = () => {
     setPatient({ name: '', phone: '', doctor: '' });
@@ -343,6 +388,7 @@ export default function Billing({ settings, showToast }) {
 
   // ------------ Main billing UI ------------
   return (
+    <>
     <div className="billing-grid">
       <div className="billing-left">
         {interactions.length > 0 && (
@@ -363,7 +409,17 @@ export default function Billing({ settings, showToast }) {
           </div>
         )}
         <div className="card">
-          <label>Search medicine by name / barcode / manufacturer — or scan barcode</label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+            <label style={{ margin: 0 }}>Search medicine by name / barcode / manufacturer — or scan barcode</label>
+            <button
+              className="secondary"
+              style={{ flexShrink: 0, marginLeft: 12, fontSize: 13, padding: '4px 12px' }}
+              onClick={openPhoneScanner}
+              title="Use your phone camera to scan a barcode"
+            >
+              📷 Scan with Phone
+            </button>
+          </div>
           <input
             ref={searchRef}
             value={query}
@@ -582,5 +638,108 @@ export default function Billing({ settings, showToast }) {
         </button>
       </div>
     </div>
+
+    {/* Out-of-stock alert modal */}
+    {outOfStockAlert && (
+      <div
+        style={{
+          position: 'fixed', inset: 0, zIndex: 1100,
+          background: 'rgba(15,23,42,0.65)', backdropFilter: 'blur(3px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+        onClick={() => setOutOfStockAlert(null)}
+      >
+        <div
+          style={{
+            background: '#fff', borderRadius: 14, padding: '32px 36px',
+            minWidth: 320, maxWidth: 420, textAlign: 'center',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.28)',
+            border: '2px solid #fca5a5',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: '#dc2626', marginBottom: 8 }}>
+            Out of Stock
+          </div>
+          {outOfStockAlert.name ? (
+            <div style={{ fontSize: 15, color: '#1e293b', marginBottom: 6 }}>
+              <strong>{outOfStockAlert.name}</strong> is currently out of stock.
+            </div>
+          ) : (
+            <div style={{ fontSize: 15, color: '#1e293b', marginBottom: 6 }}>
+              No medicine found for this barcode.
+            </div>
+          )}
+          <div style={{ fontSize: 13, color: '#64748b', marginBottom: 24 }}>
+            Barcode: <span style={{ fontFamily: 'monospace' }}>{outOfStockAlert.barcode}</span>
+          </div>
+          <button
+            className="primary"
+            style={{ width: '100%', background: '#dc2626', border: 'none' }}
+            onClick={() => setOutOfStockAlert(null)}
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* Phone camera scanner modal */}
+    {showScanModal && (
+      <div
+        style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(15,23,42,0.72)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+        onClick={() => setShowScanModal(false)}
+      >
+        <div
+          style={{
+            background: '#fff', borderRadius: 14, padding: '28px 32px',
+            minWidth: 300, textAlign: 'center', boxShadow: '0 8px 40px rgba(0,0,0,0.25)',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 6 }}>📷 Scan with Phone</div>
+          <div style={{ fontSize: 13, color: '#64748b', marginBottom: 16, lineHeight: 1.5 }}>
+            Make sure your phone and this computer are on the <strong>same Wi-Fi</strong>.<br />
+            Open the URL below (or scan the QR code) in <strong>Chrome</strong> or <strong>Safari</strong>.
+          </div>
+
+          {!phoneScanQR ? (
+            <div style={{ color: '#94a3b8', padding: '24px 0' }}>Loading…</div>
+          ) : (
+            <>
+              <img
+                src={phoneScanQR.qr}
+                alt="QR code"
+                style={{ width: 200, height: 200, borderRadius: 8, border: '1px solid #e2e8f0' }}
+              />
+              <div style={{
+                marginTop: 14, padding: '8px 14px', background: '#f1f5f9',
+                borderRadius: 8, fontFamily: 'monospace', fontSize: 14,
+                wordBreak: 'break-all', userSelect: 'all', color: '#0f172a',
+              }}>
+                {phoneScanQR.url}
+              </div>
+              <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 8 }}>
+                Scanned barcodes will be added to the bill automatically.
+              </div>
+            </>
+          )}
+
+          <button
+            className="secondary"
+            style={{ marginTop: 18, width: '100%' }}
+            onClick={() => setShowScanModal(false)}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

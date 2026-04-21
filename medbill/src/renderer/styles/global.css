@@ -517,3 +517,23 @@ table.compact td, table.compact th { padding: 7px 10px; font-size: 12.5px; }
 }
 .empty .emoji { font-size: 40px; margin-bottom: 10px; }
 .empty h3 { font-size: 16px; color: var(--text); margin-bottom: 6px; }
+
+
+/* ============== UPDATE BANNER ============== */
+.update-banner {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  font-size: 13px;
+  color: var(--text);
+}
+.update-banner button { font-size: 12px; padding: 4px 12px; }

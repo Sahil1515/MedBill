@@ -125,7 +125,7 @@ export default function Dashboard({ showToast, goTo }) {
         </div>
 
         <div className="card">
-          <h3>⏱ Expiring Soon (60 days)</h3>
+          <h3>⏱ Expiring Soon ({data.expiry_alert_days} days)</h3>
           {data.expiring_soon.length === 0 ? (
             <div className="muted">No batches expiring soon</div>
           ) : (

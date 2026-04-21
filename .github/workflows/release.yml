@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g. v2.0.0)'
+        description: 'Release version (e.g. 2.1.0 — no "v" prefix)'
         required: true
-        default: 'v2.0.0'
+        default: '2.0.0'
 
 jobs:
   build-mac:
@@ -22,15 +22,14 @@ jobs:
         working-directory: medbill
         run: npm ci
 
-      - name: Build macOS DMG
+      - name: Bump version & build macOS DMG
         working-directory: medbill
-        run: npm run build:mac
-
-      - name: Upload DMG artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: mac-dmg
-          path: medbill/release/*.dmg
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          npm run build:renderer
+          npx electron-builder --mac --publish always
 
   build-win:
     runs-on: windows-latest
@@ -45,53 +44,11 @@ jobs:
         working-directory: medbill
         run: npm ci
 
-      - name: Build Windows installer
+      - name: Bump version & build Windows installer
         working-directory: medbill
-        run: npm run build:win
-
-      - name: Upload EXE artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: win-exe
-          path: medbill/release/*.exe
-
-  release:
-    needs: [build-mac, build-win]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-          merge-multiple: true
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          name: MedBill ${{ github.event.inputs.version }}
-          body: |
-            ## MedBill ${{ github.event.inputs.version }}
-
-            ### Download
-            - **Windows**: `MedBill-Setup-2.0.0.exe` — Windows 10/11 64-bit
-            - **macOS**: `MedBill-2.0.0.dmg` — macOS 12+ (Monterey or later)
-
-            ### What's new in v2.0
-            - Barcode scanner support (USB HID)
-            - Drug interaction warnings
-            - Scheme & offer management
-            - WhatsApp bill sharing
-            - Prescription attachments
-            - Purchase returns / debit notes
-            - Credit management & payment collection
-            - Expired stock write-off
-            - Reorder suggestions with CSV export
-            - Supplier payment ledger
-            - Doctor commission & shift close reports
-            - Auto-backup scheduler
-            - Offline license key system (30-day trial)
-          files: artifacts/**/*
-          make_latest: true
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          npm run build:renderer
+          npx electron-builder --win --publish always

@@ -93,6 +93,65 @@ function PurchaseForm({ onClose, onSaved, showToast }) {
       quantity: 1, free_qty: 0, purchase_price: 0, mrp: 0, sale_price: 0, gst_rate: 12,
     }]);
 
+  const downloadTemplate = () => {
+    const header = 'Medicine Name,Batch No,Expiry (YYYY-MM),Qty,Free Qty,Purchase Price,MRP,Sale Price,GST%';
+    const example = 'Crocin 500mg,B001,2026-12,100,0,5.50,10.00,9.00,12';
+    const blob = new Blob([header + '\n' + example], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'purchase_import_template.csv';
+    a.click();
+  };
+
+  const importCSV = async () => {
+    const r = await window.api.readTextFile();
+    if (!r.ok) return;
+    const lines = r.data.text.split('\n').map((l) => l.trim()).filter(Boolean);
+    if (lines.length === 0) return setErr('CSV file is empty');
+
+    // Skip header row if first column is not a number (i.e. it's a label)
+    const firstCol = lines[0].split(',')[0].replace(/"/g, '').trim();
+    const dataLines = isNaN(parseFloat(firstCol)) && lines.length > 1 ? lines.slice(1) : lines;
+
+    const parseCSVLine = (line) => {
+      const result = [];
+      let cur = '';
+      let inQuote = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { inQuote = !inQuote; }
+        else if (ch === ',' && !inQuote) { result.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      result.push(cur.trim());
+      return result;
+    };
+
+    const imported = [];
+    for (const line of dataLines) {
+      const [name, batch_no, expiry, quantity, free_qty, purchase_price, mrp, sale_price, gst_rate] = parseCSVLine(line);
+      if (!name) continue;
+      const med = medicines.find((m) => m.name.toLowerCase() === name.toLowerCase());
+      imported.push({
+        medicine_id: med ? med.id : '',
+        medicine_name: name,
+        batch_no: batch_no || '',
+        expiry: expiry || '',
+        quantity: parseInt(quantity) || 1,
+        free_qty: parseInt(free_qty) || 0,
+        purchase_price: parseFloat(purchase_price) || 0,
+        mrp: parseFloat(mrp) || 0,
+        sale_price: parseFloat(sale_price) || 0,
+        gst_rate: parseFloat(gst_rate) || 12,
+      });
+    }
+
+    if (imported.length === 0) return setErr('No valid rows found in CSV');
+    setItems((c) => [...c, ...imported]);
+    setErr('');
+    showToast(`Imported ${imported.length} items from CSV`);
+  };
+
   const updateItem = (idx, k, v) =>
     setItems((c) => c.map((i, n) => (n === idx ? { ...i, [k]: v } : i)));
 
@@ -154,7 +213,20 @@ function PurchaseForm({ onClose, onSaved, showToast }) {
         </div>
       </div>
 
-      <div className="form-section-title" style={{ marginTop: 16 }}>Items</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 }}>
+        <div className="form-section-title" style={{ margin: 0 }}>Items</div>
+        <div className="row" style={{ gap: 8 }}>
+          <button className="ghost sm" onClick={downloadTemplate} title="Download a CSV template to fill in">
+            ↓ Template
+          </button>
+          <button className="secondary" onClick={importCSV} title="Import items from a CSV file">
+            ↑ Import CSV
+          </button>
+        </div>
+      </div>
+      <div className="muted" style={{ fontSize: 12, marginBottom: 8, marginTop: 4 }}>
+        Fill the template with medicine names, batches, quantities and prices — then import. Names must match medicines in inventory.
+      </div>
       <table className="compact">
         <thead>
           <tr><th>Medicine</th><th>Batch</th><th>Expiry</th><th>Qty</th><th>Free</th><th>Purchase ₹</th><th>MRP</th><th>Sale ₹</th><th>GST%</th><th></th></tr>

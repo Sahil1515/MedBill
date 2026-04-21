@@ -1,0 +1,63 @@
+name,generic_name,manufacturer,category,unit,hsn,gst_rate,barcode,rack_location,schedule,reorder_level,batch_no,expiry,purchase_price,mrp,sale_price,stock
+Paracetamol 500mg,Paracetamol,Cipla,Analgesic / Antipyretic,tab,30049099,12,8901234567001,A-01,H,50,B2401,2026-12-31,0.80,1.50,1.40,500
+Ibuprofen 400mg,Ibuprofen,Sun Pharma,Analgesic / Anti-inflammatory,tab,30049099,12,8901234567002,A-01,H,30,B2402,2026-10-31,1.20,2.50,2.30,300
+Diclofenac 50mg,Diclofenac Sodium,Alkem,Analgesic / Anti-inflammatory,tab,30049099,12,8901234567003,A-02,H,20,B2403,2026-08-31,1.50,3.00,2.80,200
+Aspirin 75mg,Acetylsalicylic Acid,Bayer,Antiplatelet,tab,30049099,5,8901234567004,A-02,H,30,B2404,2026-11-30,0.50,1.20,1.10,400
+Nimesulide 100mg,Nimesulide,Mankind,Analgesic / Anti-inflammatory,tab,30049099,12,8901234567005,A-03,H,20,B2405,2026-09-30,1.80,3.50,3.20,150
+Amoxicillin 500mg,Amoxicillin Trihydrate,Cipla,Antibiotic,cap,30049041,12,8901234567006,B-01,RX,20,B2406,2026-06-30,4.50,9.00,8.50,200
+Azithromycin 500mg,Azithromycin,Zydus,Antibiotic,tab,30049041,12,8901234567007,B-01,RX,15,B2407,2026-07-31,12.00,22.00,20.00,100
+Ciprofloxacin 500mg,Ciprofloxacin HCl,Ranbaxy,Antibiotic,tab,30049041,12,8901234567008,B-02,RX,20,B2408,2026-08-31,5.00,10.00,9.50,150
+Metronidazole 400mg,Metronidazole,Alkem,Antibiotic / Antiprotozoal,tab,30049041,12,8901234567009,B-02,RX,20,B2409,2026-10-31,1.20,2.80,2.60,200
+Doxycycline 100mg,Doxycycline Hyclate,Lupin,Antibiotic,cap,30049041,12,8901234567010,B-03,RX,15,B2410,2026-09-30,3.50,8.00,7.50,100
+Amoxicillin + Clavulanic 625mg,Amoxicillin + Clavulanate,GSK,Antibiotic,tab,30049041,12,8901234567011,B-03,RX,15,B2411,2026-05-31,18.00,35.00,32.00,80
+Omeprazole 20mg,Omeprazole,AstraZeneca,Antacid / PPI,cap,30049099,12,8901234567012,C-01,H,30,B2412,2026-12-31,1.50,4.00,3.80,300
+Pantoprazole 40mg,Pantoprazole Sodium,Sun Pharma,Antacid / PPI,tab,30049099,12,8901234567013,C-01,H,30,B2413,2026-11-30,2.00,5.50,5.00,250
+Ranitidine 150mg,Ranitidine HCl,Glaxo,Antacid / H2 Blocker,tab,30049099,12,8901234567014,C-02,H,20,B2414,2026-10-31,1.00,2.50,2.30,200
+Domperidone 10mg,Domperidone,Cipla,Antiemetic,tab,30049099,12,8901234567015,C-02,H,20,B2415,2026-09-30,1.20,3.00,2.80,180
+Ondansetron 4mg,Ondansetron HCl,Zydus,Antiemetic,tab,30049099,12,8901234567016,C-03,RX,15,B2416,2026-08-31,4.00,9.00,8.50,100
+Metformin 500mg,Metformin HCl,USV,Antidiabetic,tab,30049099,5,8901234567017,D-01,RX,30,B2417,2026-12-31,1.20,3.00,2.80,400
+Metformin 1000mg,Metformin HCl,Cipla,Antidiabetic,tab,30049099,5,8901234567018,D-01,RX,20,B2418,2026-11-30,2.50,5.50,5.00,200
+Glimepiride 2mg,Glimepiride,Sanofi,Antidiabetic,tab,30049099,5,8901234567019,D-02,RX,20,B2419,2026-10-31,3.50,7.00,6.50,150
+Glimepiride + Metformin 2/500mg,Glimepiride + Metformin,Sun Pharma,Antidiabetic,tab,30049099,5,8901234567020,D-02,RX,20,B2420,2026-09-30,5.00,10.00,9.50,120
+Sitagliptin 50mg,Sitagliptin Phosphate,MSD,Antidiabetic,tab,30049099,5,8901234567021,D-03,RX,10,B2421,2026-08-31,28.00,55.00,52.00,60
+Amlodipine 5mg,Amlodipine Besylate,Cipla,Antihypertensive,tab,30049099,12,8901234567022,E-01,RX,20,B2422,2026-12-31,1.50,3.50,3.20,300
+Atenolol 50mg,Atenolol,Ipca,Antihypertensive / Beta Blocker,tab,30049099,12,8901234567023,E-01,RX,20,B2423,2026-11-30,0.80,2.00,1.80,250
+Losartan 50mg,Losartan Potassium,Sun Pharma,Antihypertensive / ARB,tab,30049099,12,8901234567024,E-02,RX,20,B2424,2026-10-31,3.50,7.00,6.50,200
+Telmisartan 40mg,Telmisartan,Lupin,Antihypertensive / ARB,tab,30049099,12,8901234567025,E-02,RX,20,B2425,2026-09-30,4.00,8.00,7.50,150
+Atorvastatin 10mg,Atorvastatin Calcium,Pfizer,Antilipidemic / Statin,tab,30049099,12,8901234567026,E-03,RX,20,B2426,2026-08-31,3.00,7.00,6.50,200
+Rosuvastatin 10mg,Rosuvastatin Calcium,AstraZeneca,Antilipidemic / Statin,tab,30049099,12,8901234567027,E-03,RX,15,B2427,2026-07-31,5.00,12.00,11.00,150
+Cetirizine 10mg,Cetirizine HCl,Cipla,Antihistamine,tab,30049099,12,8901234567028,F-01,H,30,B2428,2026-12-31,0.70,1.80,1.70,400
+Levocetrizine 5mg,Levocetirizine Dihydrochloride,Sun Pharma,Antihistamine,tab,30049099,12,8901234567029,F-01,H,30,B2429,2026-11-30,1.20,3.00,2.80,300
+Fexofenadine 120mg,Fexofenadine HCl,Sanofi,Antihistamine,tab,30049099,12,8901234567030,F-02,H,15,B2430,2026-10-31,5.00,11.00,10.00,120
+Montelukast 10mg,Montelukast Sodium,Cipla,Antiasthmatic / Anti-allergy,tab,30049099,12,8901234567031,F-02,RX,20,B2431,2026-09-30,8.00,18.00,16.50,150
+Salbutamol 2mg,Salbutamol Sulphate,GSK,Bronchodilator,tab,30049099,12,8901234567032,F-03,RX,15,B2432,2026-08-31,1.00,2.50,2.30,200
+Prednisolone 5mg,Prednisolone,Wyeth,Corticosteroid,tab,30049099,12,8901234567033,F-03,RX,15,B2433,2026-07-31,0.80,2.00,1.80,180
+Vitamin D3 60000 IU,Cholecalciferol,Sun Pharma,Vitamin / Supplement,cap,30049099,12,8901234567034,G-01,H,20,B2434,2026-12-31,15.00,32.00,30.00,200
+Vitamin B-Complex,Vitamins B1+B6+B12,Pfizer,Vitamin / Supplement,tab,30049099,12,8901234567035,G-01,H,30,B2435,2026-11-30,1.50,4.00,3.80,300
+Calcium + Vitamin D3 500mg,Calcium Carbonate + D3,Cipla,Vitamin / Supplement,tab,30049099,12,8901234567036,G-02,H,20,B2436,2026-10-31,2.50,6.00,5.50,250
+Ferrous Sulphate + Folic Acid,Ferrous Sulphate + Folic Acid,Mankind,Vitamin / Supplement,tab,30049099,5,8901234567037,G-02,H,30,B2437,2026-09-30,1.00,3.00,2.80,300
+Zinc 20mg,Zinc Sulphate,Dr. Reddy's,Vitamin / Supplement,tab,30049099,12,8901234567038,G-03,H,20,B2438,2026-08-31,1.20,3.00,2.80,200
+Clonazepam 0.5mg,Clonazepam,Sun Pharma,Anxiolytic / Antiepileptic,tab,30049099,12,8901234567039,H-01,RX-H,10,B2439,2026-07-31,2.00,5.00,4.70,80
+Alprazolam 0.25mg,Alprazolam,Pfizer,Anxiolytic,tab,30049099,12,8901234567040,H-01,RX-H,10,B2440,2026-06-30,2.50,5.50,5.20,60
+Sertraline 50mg,Sertraline HCl,Pfizer,Antidepressant / SSRI,tab,30049099,12,8901234567041,H-02,RX,10,B2441,2026-05-31,8.00,18.00,16.50,80
+Pantoprazole + Domperidone,Pantoprazole + Domperidone,Alkem,Antacid / Combination,cap,30049099,12,8901234567042,C-03,H,20,B2442,2026-12-31,4.00,9.00,8.50,200
+ORS Powder Sachet,Oral Rehydration Salts,WHO/Govt,Electrolyte,sachet,30049099,0,8901234567043,I-01,H,30,B2443,2026-12-31,3.00,7.00,6.50,300
+Clotrimazole 1% Cream 15g,Clotrimazole,Bayer,Antifungal / Topical,tube,30049099,12,8901234567044,J-01,,20,B2444,2026-11-30,22.00,48.00,45.00,80
+Betamethasone 0.1% Cream 10g,Betamethasone Valerate,GSK,Corticosteroid / Topical,tube,30049099,12,8901234567045,J-01,RX,15,B2445,2026-10-31,18.00,38.00,36.00,60
+Mupirocin 2% Ointment 5g,Mupirocin,GSK,Antibiotic / Topical,tube,30049099,12,8901234567046,J-02,,15,B2446,2026-09-30,35.00,75.00,70.00,50
+Ketoconazole 2% Shampoo 100ml,Ketoconazole,Janssen,Antifungal / Topical,bottle,33059090,18,8901234567047,J-02,,10,B2447,2026-08-31,85.00,185.00,175.00,40
+Paracetamol 250mg Syrup 60ml,Paracetamol,Cipla,Analgesic / Antipyretic,syrup,30049099,12,8901234567048,K-01,H,20,B2448,2026-10-31,18.00,38.00,36.00,100
+Amoxicillin 125mg Syrup 60ml,Amoxicillin,Ranbaxy,Antibiotic,syrup,30049041,12,8901234567049,K-01,RX,15,B2449,2026-06-30,28.00,58.00,55.00,60
+Cetirizine 5mg Syrup 60ml,Cetirizine HCl,Cipla,Antihistamine,syrup,30049099,12,8901234567050,K-02,H,20,B2450,2026-11-30,22.00,48.00,45.00,80
+Cough Syrup Benadryl 100ml,Diphenhydramine + Ammonium,J&J,Cough / Cold,syrup,30049099,12,8901234567051,K-02,H,20,B2451,2026-09-30,40.00,85.00,80.00,70
+Antacid Syrup Gelusil 170ml,Aluminium + Magnesium Hydroxide,Pfizer,Antacid,syrup,30049099,12,8901234567052,K-03,H,15,B2452,2026-10-31,48.00,100.00,95.00,50
+Ciprofloxacin 0.3% Eye Drops 5ml,Ciprofloxacin,Alcon,Antibiotic / Eye Drops,drops,30049099,12,8901234567053,L-01,RX,10,B2453,2026-07-31,28.00,58.00,55.00,50
+Chloramphenicol 0.5% Eye Drops 10ml,Chloramphenicol,FDC,Antibiotic / Eye Drops,drops,30049099,12,8901234567054,L-01,RX,10,B2454,2026-06-30,22.00,48.00,45.00,40
+Tobramycin + Dexamethasone Eye Drops 5ml,Tobramycin + Dexamethasone,Alcon,Antibiotic + Steroid / Eye,drops,30049099,12,8901234567055,L-02,RX,10,B2455,2026-05-31,65.00,140.00,132.00,30
+Insulin Regular 40IU/ml (Vial),Insulin Regular Human,Novo Nordisk,Antidiabetic / Insulin,vial,30049099,5,8901234567056,D-04,RX,5,B2456,2026-04-30,85.00,180.00,170.00,30
+Insulin NPH 40IU/ml (Vial),Isophane Insulin Human,Eli Lilly,Antidiabetic / Insulin,vial,30049099,5,8901234567057,D-04,RX,5,B2457,2026-04-30,88.00,185.00,175.00,25
+Diclofenac Injection 75mg/3ml,Diclofenac Sodium,Troikaa,Analgesic / Injection,inj,30049099,12,8901234567058,M-01,RX,10,B2458,2026-08-31,12.00,28.00,26.00,60
+Ondansetron Injection 2mg/ml,Ondansetron HCl,Neon,Antiemetic / Injection,inj,30049099,12,8901234567059,M-01,RX,10,B2459,2026-07-31,18.00,38.00,36.00,40
+Pantoprazole Injection 40mg,Pantoprazole Sodium,Zydus,Antacid / Injection,inj,30049099,12,8901234567060,M-02,RX,10,B2460,2026-06-30,22.00,48.00,45.00,35
+Uprise D3,Cholecalciferol,Eris Lifesciences,Vitamin / Supplement,sachet,30049099,12,8901234567061,G-01,H,20,B2461,2027-06-30,18.00,38.00,36.00,150
+Uprise D3 60K Capsule 12s,Cholecalciferol IP (Vitamin D3) 60000IU,Alkem Laboratories Ltd.,Vitamin / Supplement,cap,30049099,12,8902269524827,G-01,RX,10,B2462,2027-11-30,280.00,394.83,394.83,100

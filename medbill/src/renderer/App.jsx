@@ -44,6 +44,7 @@ export default function App() {
   const [settings, setSettings] = useState(null);
   const [toast, setToast] = useState(null);
   const [theme, setTheme] = useState('light');
+  const [update, setUpdate] = useState(null); // null | { state, version, percent }
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -61,6 +62,20 @@ export default function App() {
   }, []);
 
   useEffect(() => { loadSettings(); }, [loadSettings]);
+
+  // updater events
+  useEffect(() => {
+    if (!window.events) return;
+    window.events.onUpdateAvailable((info) =>
+      setUpdate({ state: 'available', version: info.version })
+    );
+    window.events.onUpdateProgress((p) =>
+      setUpdate((u) => ({ ...u, state: 'downloading', percent: Math.round(p.percent) }))
+    );
+    window.events.onUpdateDownloaded((info) =>
+      setUpdate({ state: 'downloaded', version: info.version })
+    );
+  }, []);
 
   // menu events
   useEffect(() => {
@@ -200,6 +215,35 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      {update && (
+        <div className="update-banner no-print">
+          {update.state === 'available' && (
+            <>
+              <span>Update available: v{update.version}</span>
+              <button
+                className="primary"
+                onClick={() => { window.api.downloadUpdate(); setUpdate((u) => ({ ...u, state: 'downloading', percent: 0 })); }}
+              >
+                Download
+              </button>
+              <button onClick={() => setUpdate(null)}>✕</button>
+            </>
+          )}
+          {update.state === 'downloading' && (
+            <span>Downloading update… {update.percent}%</span>
+          )}
+          {update.state === 'downloaded' && (
+            <>
+              <span>v{update.version} ready to install</span>
+              <button className="primary" onClick={() => window.api.installUpdate()}>
+                Restart &amp; Install
+              </button>
+              <button onClick={() => setUpdate(null)}>Later</button>
+            </>
+          )}
+        </div>
+      )}
 
       {toast && <Toast {...toast} />}
     </div>

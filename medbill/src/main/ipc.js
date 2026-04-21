@@ -3,9 +3,16 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const db = require('./database');
+const scanner = require('./scanner-server');
+const QRCode = require('qrcode');
 
-// License secret — change this to your own random string before shipping
-const LICENSE_SECRET = 'medbill-saas-secret-2026';
+// RSA public key for license verification.
+// Generate your key pair once with: node keygen.js setup
+// Then paste the output of: node keygen.js pubkey
+// REPLACE the placeholder below before building for distribution.
+const LICENSE_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+REPLACE_THIS_WITH_OUTPUT_OF__node_keygen.js_pubkey
+-----END PUBLIC KEY-----`;
 
 function wrap(fn) {
   return async (_evt, ...args) => {
@@ -218,7 +225,6 @@ function registerIpc() {
   // License
   ipcMain.handle('license:get', wrap(() => db.getLicense()));
   ipcMain.handle('license:activate', wrap((key) => {
-    // Decode key: base64(JSON) with HMAC signature
     let payload;
     try {
       const decoded = Buffer.from(key, 'base64').toString('utf8');
@@ -226,16 +232,19 @@ function registerIpc() {
     } catch {
       throw new Error('Invalid license key format');
     }
-    const { pharmacy_name, plan, expires_at, sig } = payload;
-    if (!sig || !pharmacy_name || !expires_at) throw new Error('Malformed license key');
-    // Verify signature
-    const body = `${pharmacy_name}|${plan}|${expires_at}`;
-    const expected = crypto.createHmac('sha256', LICENSE_SECRET).update(body).digest('hex').slice(0, 16);
-    if (sig !== expected) throw new Error('License key is invalid or has been tampered with');
+    const { pharmacy_name, plan, expires_at, issued_at, sig } = payload;
+    if (!sig || !pharmacy_name || !expires_at || !issued_at) throw new Error('Malformed license key');
+    // Verify RSA-SHA256 signature
+    const body = `${pharmacy_name}|${plan}|${expires_at}|${issued_at}`;
+    const verify = crypto.createVerify('RSA-SHA256');
+    verify.update(body);
+    let valid = false;
+    try { valid = verify.verify(LICENSE_PUBLIC_KEY, sig, 'base64'); } catch { valid = false; }
+    if (!valid) throw new Error('License key is invalid or has been tampered with');
     // Check expiry
     if (new Date(expires_at) < new Date()) throw new Error('License has expired. Please renew.');
     // Persist
-    const machineId = crypto.createHash('md5').update(require('os').hostname() + require('os').platform()).digest('hex');
+    const machineId = crypto.createHash('sha256').update(require('os').hostname() + require('os').platform()).digest('hex').slice(0, 32);
     return db.setLicense({
       license_key: key,
       pharmacy_name,
@@ -245,13 +254,14 @@ function registerIpc() {
       machine_id: machineId,
     });
   }));
-  // Tool to generate a license key (call from dev console for issuing keys)
-  ipcMain.handle('license:generate', wrap(({ pharmacy_name, plan, expires_at }) => {
-    const body = `${pharmacy_name}|${plan}|${expires_at}`;
-    const sig = crypto.createHmac('sha256', LICENSE_SECRET).update(body).digest('hex').slice(0, 16);
-    const key = Buffer.from(JSON.stringify({ pharmacy_name, plan, expires_at, sig })).toString('base64');
-    return { key };
-  }));
+
+  // Phone camera scanner — returns QR code data URL + plain URL
+  ipcMain.handle('scanner:getQR', async () => {
+    const info = scanner.getInfo();
+    if (!info) return { ok: false, error: 'Scanner server is not running' };
+    const qr = await QRCode.toDataURL(info.url, { width: 220, margin: 2, color: { dark: '#0f172a', light: '#f8fafc' } });
+    return { ok: true, data: { url: info.url, qr } };
+  });
 
   // Auto-backup config
   ipcMain.handle('backup:auto_folder', async () => {

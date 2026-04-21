@@ -5,6 +5,15 @@ const invoke = (ch, ...a) => ipcRenderer.invoke(ch, ...a);
 contextBridge.exposeInMainWorld('events', {
   onNav: (cb) => ipcRenderer.on('nav', (_e, target) => cb(target)),
   onAction: (cb) => ipcRenderer.on('action', (_e, a) => cb(a)),
+  // Returns a cleanup function that removes the listener
+  onPhoneBarcode: (cb) => {
+    const handler = (_e, barcode) => cb(barcode);
+    ipcRenderer.on('scanner:barcode', handler);
+    return () => ipcRenderer.removeListener('scanner:barcode', handler);
+  },
+  onUpdateAvailable: (cb) => ipcRenderer.on('updater:available', (_e, info) => cb(info)),
+  onUpdateProgress:  (cb) => ipcRenderer.on('updater:progress',  (_e, p)    => cb(p)),
+  onUpdateDownloaded:(cb) => ipcRenderer.on('updater:downloaded', (_e, info) => cb(info)),
 });
 
 contextBridge.exposeInMainWorld('api', {
@@ -118,7 +127,11 @@ contextBridge.exposeInMainWorld('api', {
   // License
   getLicense: () => invoke('license:get'),
   activateLicense: (key) => invoke('license:activate', key),
-  generateLicense: (d) => invoke('license:generate', d),
+
+  // Updater
+  checkForUpdates: () => invoke('updater:check'),
+  downloadUpdate:  () => ipcRenderer.send('updater:download'),
+  installUpdate:   () => ipcRenderer.send('updater:install'),
 
   // Auto-backup
   pickAutoBackupFolder: () => invoke('backup:auto_folder'),
@@ -126,4 +139,7 @@ contextBridge.exposeInMainWorld('api', {
 
   // Notify main to re-schedule auto-backup after settings change
   notifySettingsChanged: () => ipcRenderer.send('settings:changed'),
+
+  // Phone camera scanner
+  getPhoneScannerQR: () => invoke('scanner:getQR'),
 });

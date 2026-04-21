@@ -1,8 +1,10 @@
-const { app, BrowserWindow, Menu, shell, dialog } = require('electron');
+const { app, BrowserWindow, Menu, shell, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const db = require('./database');
 const { registerIpc } = require('./ipc');
+const scanner = require('./scanner-server');
+const { autoUpdater } = require('electron-updater');
 
 const isDev = process.env.NODE_ENV === 'development';
 let mainWindow;
@@ -154,14 +156,64 @@ app.whenReady().then(() => {
   createWindow();
   scheduleAutoBackup();
 
+  // Start the phone camera scanner server
+  scanner.start((barcode) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('scanner:barcode', barcode);
+    }
+  }).catch((err) => {
+    console.warn('Phone scanner server could not start:', err.message);
+  });
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
 // Allow renderer to trigger re-schedule after settings change
-require('electron').ipcMain.on('settings:changed', () => scheduleAutoBackup());
+ipcMain.on('settings:changed', () => scheduleAutoBackup());
+
+// ─── Auto-updater ─────────────────────────────────────────────────────────────
+// Only run in packaged app — not in dev where there's no GitHub release to check
+if (!isDev) {
+  autoUpdater.autoDownload = false;       // user chooses when to download
+  autoUpdater.autoInstallOnAppQuit = false;
+
+  autoUpdater.on('update-available', (info) => {
+    if (mainWindow && !mainWindow.isDestroyed())
+      mainWindow.webContents.send('updater:available', info);
+  });
+
+  autoUpdater.on('download-progress', (progress) => {
+    if (mainWindow && !mainWindow.isDestroyed())
+      mainWindow.webContents.send('updater:progress', progress);
+  });
+
+  autoUpdater.on('update-downloaded', (info) => {
+    if (mainWindow && !mainWindow.isDestroyed())
+      mainWindow.webContents.send('updater:downloaded', info);
+  });
+
+  autoUpdater.on('error', (err) => {
+    console.error('Updater error:', err.message);
+  });
+
+  // Check silently 10 seconds after launch so startup isn't delayed
+  app.whenReady().then(() => {
+    setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 10_000);
+  });
+}
+
+// Renderer-triggered updater actions
+ipcMain.handle('updater:check', async () => {
+  if (isDev) return { ok: false, error: 'Updates disabled in dev mode' };
+  try { await autoUpdater.checkForUpdates(); return { ok: true }; }
+  catch (e) { return { ok: false, error: e.message }; }
+});
+ipcMain.on('updater:download', () => { if (!isDev) autoUpdater.downloadUpdate(); });
+ipcMain.on('updater:install',  () => { if (!isDev) autoUpdater.quitAndInstall(false, true); });
 
 app.on('window-all-closed', () => {
+  scanner.stop();
   if (process.platform !== 'darwin') app.quit();
 });

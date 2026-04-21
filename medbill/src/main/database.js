@@ -339,6 +339,7 @@ function createSchema() {
   ensureColumn('medicines', 'schedule', 'TEXT');
   ensureColumn('medicines', 'composition', 'TEXT');
   ensureColumn('medicines', 'reorder_level', 'INTEGER DEFAULT 10');
+  ensureColumn('medicines', 'notes', 'TEXT');
   ensureColumn('medicines', 'archived', 'INTEGER DEFAULT 0');
 
   // Bills — new columns for v2
@@ -448,6 +449,43 @@ function migrateLegacy() {
       });
       tx(legacy);
     }
+
+    // Rebuild medicines table to remove the legacy NOT NULL constraint on price/stock
+    // so that new INSERTs (which no longer include those columns) don't fail.
+    db.pragma('foreign_keys = OFF');
+    db.exec(`
+      BEGIN;
+      CREATE TABLE IF NOT EXISTS medicines_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        generic_name TEXT,
+        manufacturer TEXT,
+        category TEXT,
+        unit TEXT DEFAULT 'tab',
+        hsn TEXT,
+        gst_rate REAL DEFAULT 12,
+        barcode TEXT,
+        rack_location TEXT,
+        schedule TEXT,
+        composition TEXT,
+        reorder_level INTEGER DEFAULT 10,
+        notes TEXT,
+        archived INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+      INSERT INTO medicines_new
+        (id, name, generic_name, manufacturer, category, unit, hsn, gst_rate,
+         barcode, rack_location, schedule, composition, reorder_level, notes, archived, created_at)
+      SELECT
+        id, name, generic_name, manufacturer, category, unit, hsn, gst_rate,
+        barcode, rack_location, schedule, composition, reorder_level, notes, archived, created_at
+      FROM medicines;
+      DROP TABLE medicines;
+      ALTER TABLE medicines_new RENAME TO medicines;
+      CREATE INDEX IF NOT EXISTS idx_med_name ON medicines(name);
+      COMMIT;
+    `);
+    db.pragma('foreign_keys = ON');
   }
 }
 
@@ -1147,6 +1185,9 @@ function getDashboardStats() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
   const weekStart = new Date(now.getTime() - 6 * 86400000).toISOString().slice(0, 10);
 
+  const settings = getSettings();
+  const expiryDays = parseInt(settings.expiry_alert_days) || 60;
+
   const row = (sql, ...p) => db.prepare(sql).get(...p);
 
   const today = row(
@@ -1176,7 +1217,7 @@ function getDashboardStats() {
     `SELECT b.id, b.batch_no, b.expiry, b.stock, m.name
      FROM batches b JOIN medicines m ON m.id = b.medicine_id
      WHERE b.stock > 0 AND b.expiry IS NOT NULL
-       AND date(b.expiry || '-01', '+1 month', '-1 day') <= date('now', '+60 days')
+       AND date(b.expiry || '-01', '+1 month', '-1 day') <= date('now', '+${expiryDays} days')
      ORDER BY b.expiry ASC LIMIT 10`
   ).all();
 
@@ -1202,6 +1243,7 @@ function getDashboardStats() {
     medicines: medicines.c,
     low_stock: lowStock,
     expiring_soon: expiring,
+    expiry_alert_days: expiryDays,
     weekly_trend: trend,
     top_medicines: topMeds,
   };

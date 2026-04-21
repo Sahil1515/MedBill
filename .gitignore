@@ -6,3 +6,10 @@ release/
 .DS_Store
 .env
 *.env.local
+*.pem
+keygen.js
+.mcp.json
+.claude/
+.netlify/
+# Added by code-review-graph
+.code-review-graph/
