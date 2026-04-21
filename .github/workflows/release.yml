@@ -11,6 +11,8 @@ on:
 jobs:
   build-mac:
     runs-on: macos-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +27,7 @@ jobs:
       - name: Bump version & build macOS DMG
         working-directory: medbill
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
           npm run build:renderer
@@ -33,6 +35,8 @@ jobs:
 
   build-win:
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +51,7 @@ jobs:
       - name: Bump version & build Windows installer
         working-directory: medbill
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
           npm run build:renderer
