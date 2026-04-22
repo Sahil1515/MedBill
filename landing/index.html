@@ -214,6 +214,30 @@
     .download-btn:hover { background: var(--blue-dark); }
     .version-tag { font-size: 0.78rem; color: var(--gray-500); margin-top: 10px; }
 
+    /* CHECKOUT MODAL */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 9999; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 36px 32px;
+      max-width: 420px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+    .modal h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+    .modal p { color: #64748b; font-size: 0.9rem; margin-bottom: 24px; }
+    .modal label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #374151; }
+    .modal input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px;
+      font-size: 1rem; outline: none; margin-bottom: 20px;
+    }
+    .modal input:focus { border-color: #1d4ed8; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; }
+    .modal-cancel { background: #f1f5f9; color: #475569; }
+    .modal-confirm { background: #1d4ed8; color: #fff; }
+    .modal-confirm:disabled { opacity: 0.6; cursor: not-allowed; }
+
     /* PRICING */
     .pricing { background: #fff; }
 
@@ -601,7 +625,7 @@
         <li><span class="check">✓</span> Email support</li>
         <li><span class="cross">✗</span> Multi-PC not included</li>
       </ul>
-      <a href="https://github.com/Sahil1515/MedBill/releases/latest" class="plan-btn plan-btn-primary" id="btn-standard">Subscribe</a>
+      <button class="plan-btn plan-btn-primary" id="btn-standard" onclick="startCheckout('standard')">Subscribe</button>
     </div>
 
     <!-- PRO -->
@@ -619,7 +643,7 @@
         <li><span class="check">✓</span> Remote setup assistance</li>
         <li><span class="check">✓</span> Early access to new features</li>
       </ul>
-      <a href="https://github.com/Sahil1515/MedBill/releases/latest" class="plan-btn plan-btn-secondary" id="btn-pro">Subscribe Pro</a>
+      <button class="plan-btn plan-btn-secondary" id="btn-pro" onclick="startCheckout('pro')">Subscribe Pro</button>
     </div>
   </div>
 
@@ -736,6 +760,20 @@
   <p style="margin-top: 28px; font-size: 0.78rem;">© 2026 MedBill. All rights reserved.</p>
 </footer>
 
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3>One quick thing</h3>
+    <p>We'll include your pharmacy name on the license key sent to your email.</p>
+    <label for="pharmacy-input">Pharmacy / Store Name</label>
+    <input id="pharmacy-input" type="text" placeholder="e.g. Sharma Medical Store" autocomplete="organization">
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-confirm" id="modal-confirm-btn" onclick="confirmCheckout()">Proceed to Payment</button>
+    </div>
+  </div>
+</div>
+
 <script>
   /* ---- PRICING TOGGLE ---- */
   const plans = {
@@ -795,6 +833,51 @@
   function trackDownload(platform) {
     console.log('Download clicked:', platform);
   }
+
+  /* ---- RAZORPAY CHECKOUT ---- */
+  let _checkoutPlan = null;
+
+  function startCheckout(plan) {
+    _checkoutPlan = plan;
+    document.getElementById('pharmacy-input').value = '';
+    document.getElementById('checkout-modal').classList.add('open');
+    setTimeout(() => document.getElementById('pharmacy-input').focus(), 50);
+  }
+
+  function closeModal() {
+    document.getElementById('checkout-modal').classList.remove('open');
+    _checkoutPlan = null;
+  }
+
+  async function confirmCheckout() {
+    const pharmacyName = document.getElementById('pharmacy-input').value.trim();
+    if (!pharmacyName) {
+      document.getElementById('pharmacy-input').focus();
+      return;
+    }
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Redirecting…';
+    try {
+      const res = await fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: _checkoutPlan, billing: currentBilling, pharmacyName }),
+      });
+      if (!res.ok) throw new Error('Server error');
+      const { url } = await res.json();
+      window.location.href = url;
+    } catch (err) {
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Proceed to Payment';
+      alert('Could not start checkout. Please try again.');
+    }
+  }
+
+  document.getElementById('pharmacy-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirmCheckout();
+    if (e.key === 'Escape') closeModal();
+  });
 
   /* ---- LIVE VERSION FROM GITHUB ---- */
   fetch('https://api.github.com/repos/Sahil1515/MedBill/releases/latest')
